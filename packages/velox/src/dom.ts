@@ -1,4 +1,4 @@
-import { createEffect } from './reactive';
+import { createEffect, batch } from './reactive';
 
 export type Component = (props: any) => Node;
 
@@ -76,7 +76,8 @@ export function h(tag: string | Component, props: Props | null, ...children: any
   for (const [key, value] of Object.entries(props)) {
     if (key.startsWith('on') && typeof value === 'function') {
       const eventName = key.toLowerCase().substring(2);
-      element.addEventListener(eventName, value);
+      // Auto-batching for events
+      element.addEventListener(eventName, (e) => batch(() => value(e)));
     } else {
       // Reactivity support for attributes
       if (typeof value === 'function') {

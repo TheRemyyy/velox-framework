@@ -7,6 +7,7 @@ const isServer = typeof window === 'undefined';
 export const For: Component = (props: any) => {
     const each = props.each as () => any[];
     const renderer = props.children[0];
+    const keyFn = props.key; // Optional key function
 
     if (isServer) {
         const list = each() || [];
@@ -19,27 +20,41 @@ export const For: Component = (props: any) => {
     // Wrapper container with display: contents to minimize layout impact
     const container = h('div', { style: { display: 'contents' } }) as HTMLElement;
 
-    // Map of rendered items: Item Reference -> DOM Node
-    let renderedItems = new Map<any, Node>();
+    // Map of rendered items: Key -> Array of Nodes (to handle duplicates)
+    let renderedItems = new Map<any, Node[]>();
 
     const stop = createEffect(() => {
         const list = each() || [];
-        const newRenderedItems = new Map<any, Node>();
+        const newRenderedItems = new Map<any, Node[]>();
+
+        // Create a pool of existing nodes to reuse
+        // We clone the arrays because we will shift() from them
+        const pool = new Map<any, Node[]>();
+        renderedItems.forEach((nodes, key) => {
+             pool.set(key, [...nodes]);
+        });
 
         // Start diffing from the beginning of the container
         let currentDomNode = container.firstChild;
 
         list.forEach((item, index) => {
-             let node = renderedItems.get(item);
+             const key = keyFn ? keyFn(item, index) : item;
 
-             // If item is not previously rendered, create it
+             let nodes = pool.get(key);
+             let node: Node | undefined;
+
+             if (nodes && nodes.length > 0) {
+                 node = nodes.shift();
+             }
+
              if (!node) {
                  node = renderer(item, () => index);
              }
 
-             // Ensure node is defined
              if (node) {
-                 newRenderedItems.set(item, node);
+                 // Register in new map
+                 if (!newRenderedItems.has(key)) newRenderedItems.set(key, []);
+                 newRenderedItems.get(key)!.push(node);
 
                  // DOM Reconciliation
                  if (node !== currentDomNode) {
@@ -52,14 +67,14 @@ export const For: Component = (props: any) => {
              }
         });
 
-        // Cleanup removed items
-        renderedItems.forEach((node, item) => {
-            if (!newRenderedItems.has(item)) {
+        // Cleanup remaining nodes in pool (not reused)
+        pool.forEach((nodes) => {
+            nodes.forEach(node => {
                 dispose(node);
                 if (node.parentNode === container) {
                     container.removeChild(node);
                 }
-            }
+            });
         });
 
         renderedItems = newRenderedItems;

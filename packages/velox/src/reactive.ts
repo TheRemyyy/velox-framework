@@ -1,5 +1,7 @@
 // Global context for dependency tracking
 let context: Subscriber | null = null;
+let batchDepth = 0;
+const batchQueue = new Set<Subscriber>();
 
 interface Subscriber {
   execute(): void;
@@ -9,6 +11,25 @@ interface Subscriber {
 
 type Getter<T> = () => T;
 type Setter<T> = (newValue: T | ((prev: T) => T)) => void;
+
+/**
+ * Batches signal updates to prevent multiple effect executions.
+ * @param fn The function to execute.
+ */
+export function batch<T>(fn: () => T): T {
+  batchDepth++;
+  try {
+    return fn();
+  } finally {
+    batchDepth--;
+    if (batchDepth === 0) {
+      // Flush queue
+      const subscribers = [...batchQueue];
+      batchQueue.clear();
+      subscribers.forEach((sub) => sub.execute());
+    }
+  }
+}
 
 /**
  * Creates a reactive signal.
@@ -35,8 +56,14 @@ export function createSignal<T>(initialValue: T): [Getter<T>, Setter<T>] {
 
     if (value !== nextValue) {
       value = nextValue;
-      // Snapshot subscribers before iterating to avoid infinite loops if an effect modifies the signal
-      [...subscribers].forEach((sub) => sub.execute());
+      // Snapshot subscribers before iterating
+      [...subscribers].forEach((sub) => {
+        if (batchDepth > 0) {
+          batchQueue.add(sub);
+        } else {
+          sub.execute();
+        }
+      });
     }
   };
 

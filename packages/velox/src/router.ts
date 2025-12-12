@@ -1,5 +1,5 @@
 import { createSignal, createEffect } from './reactive';
-import { h, Component, dispose, addNodeCleanup } from './dom';
+import { h, Component, dispose, addNodeCleanup, Fragment } from './dom';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -17,10 +17,14 @@ export const Router: Component = (props: any) => {
     return props.children;
 };
 
+export const Outlet: Component = (props: any) => {
+    return h(Fragment, { children: props.children });
+};
+
 export const Route: Component = (props: any) => {
     if (!isBrowser) return null as any;
 
-    const { path: routePath, component } = props;
+    const { path: routePath, component, exact = true, children } = props;
 
     const container = h('div', {
         'data-router-outlet': routePath,
@@ -34,11 +38,12 @@ export const Route: Component = (props: any) => {
         container.childNodes.forEach(child => dispose(child));
         container.textContent = '';
 
-        const match = matchRoute(routePath, currentPath);
+        const match = matchRoute(routePath, currentPath, exact);
 
         if (match) {
             if (typeof component === 'function') {
-                const node = component({ params: match.params });
+                // Pass children (sub-routes) to the component so it can render them (via Outlet or props.children)
+                const node = component({ params: match.params, children });
                 container.appendChild(node);
             }
         }
@@ -71,13 +76,14 @@ export function navigate(to: string) {
     }
 }
 
-function matchRoute(routePath: string, currentPath: string) {
+function matchRoute(routePath: string, currentPath: string, exact: boolean) {
     if (routePath === '*') return { params: {} };
 
     const routeSegments = routePath.split('/').filter(Boolean);
     const pathSegments = currentPath.split('/').filter(Boolean);
 
-    if (routeSegments.length !== pathSegments.length) return null;
+    if (exact && routeSegments.length !== pathSegments.length) return null;
+    if (!exact && pathSegments.length < routeSegments.length) return null;
 
     const params: Record<string, string> = {};
     for (let i = 0; i < routeSegments.length; i++) {
