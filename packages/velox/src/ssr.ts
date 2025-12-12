@@ -5,6 +5,17 @@ const VOID_ELEMENTS = new Set([
   'link', 'meta', 'param', 'source', 'track', 'wbr'
 ]);
 
+// Global hydration counter
+let hydrationId = 0;
+
+/**
+ * Resets the global hydration ID counter.
+ * Call this before rendering a new request on the server.
+ */
+export function resetHydrationId() {
+    hydrationId = 0;
+}
+
 export class SafeString {
     constructor(public value: string) {}
     toString() { return this.value; }
@@ -43,7 +54,8 @@ export function renderToString(tag: string | SSRComponent | any, props: any = {}
 
     // Handle HTML Element
     const tagName = tag as string;
-    let html = `<${tagName}`;
+    hydrationId++;
+    let html = `<${tagName} data-hid="${hydrationId}"`;
 
     // Attributes
     for (const [key, value] of Object.entries(props)) {

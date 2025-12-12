@@ -5,6 +5,39 @@ export type Component = (props: any) => Node;
 // Basic Types
 type Props = Record<string, any>;
 
+let hydrationId = 0;
+let isHydrating = false;
+
+export function setHydrating(value: boolean) {
+    isHydrating = value;
+}
+
+export function resetHydrationId() {
+    hydrationId = 0;
+}
+
+// Helper to attach cleanups
+const CLEANUP_KEY = Symbol('velox_cleanup');
+interface VeloxNode extends Node {
+    [CLEANUP_KEY]?: (() => void)[];
+}
+
+export function addNodeCleanup(node: Node, fn: () => void) {
+    const vNode = node as VeloxNode;
+    if (!vNode[CLEANUP_KEY]) vNode[CLEANUP_KEY] = [];
+    vNode[CLEANUP_KEY]!.push(fn);
+}
+
+export function dispose(node: Node) {
+    const vNode = node as VeloxNode;
+    if (vNode[CLEANUP_KEY]) {
+        vNode[CLEANUP_KEY]!.forEach(fn => fn());
+        vNode[CLEANUP_KEY] = undefined;
+    }
+    // Recursive
+    node.childNodes.forEach(child => dispose(child));
+}
+
 /**
  * Creates a DOM element or component.
  * @param tag The tag name (string) or component function.
@@ -22,7 +55,22 @@ export function h(tag: string | Component, props: Props | null, ...children: any
   }
 
   // It's a native DOM element
-  const element = document.createElement(tag);
+  hydrationId++;
+  let element: HTMLElement | null = null;
+  let hydrated = false;
+
+  if (isHydrating) {
+      const existing = document.querySelector(`[data-hid="${hydrationId}"]`);
+      if (existing && existing.tagName.toLowerCase() === tag.toLowerCase()) {
+          element = existing as HTMLElement;
+          element.removeAttribute('data-hid');
+          hydrated = true;
+      }
+  }
+
+  if (!element) {
+      element = document.createElement(tag);
+  }
 
   // Handle props
   for (const [key, value] of Object.entries(props)) {
@@ -32,10 +80,11 @@ export function h(tag: string | Component, props: Props | null, ...children: any
     } else {
       // Reactivity support for attributes
       if (typeof value === 'function') {
-        createEffect(() => {
+        const stop = createEffect(() => {
             const newValue = value();
-            setAttribute(element, key, newValue);
+            setAttribute(element!, key, newValue);
         });
+        addNodeCleanup(element, stop);
       } else {
         setAttribute(element, key, value);
       }
@@ -43,9 +92,13 @@ export function h(tag: string | Component, props: Props | null, ...children: any
   }
 
   // Handle children
-  normalizedChildren.forEach(child => {
-      appendChild(element, child);
-  });
+  if (hydrated) {
+      reconcileChildren(element, normalizedChildren);
+  } else {
+      normalizedChildren.forEach(child => {
+          appendChild(element!, child);
+      });
+  }
 
   return element;
 }
@@ -66,7 +119,7 @@ function appendChild(parent: Node, child: any) {
     if (typeof child === 'function') {
         // It's a signal or computed value -> Dynamic Text Node
         let currentTextNode: Text | null = null;
-        createEffect(() => {
+        const stop = createEffect(() => {
             const newValue = child();
             const textContent = String(newValue ?? '');
 
@@ -77,11 +130,66 @@ function appendChild(parent: Node, child: any) {
                 currentTextNode.data = textContent;
             }
         });
+        addNodeCleanup(parent, stop);
     } else if (child instanceof Node) {
         parent.appendChild(child);
     } else {
         // String or Number
         parent.appendChild(document.createTextNode(String(child)));
+    }
+}
+
+function reconcileChildren(parent: HTMLElement, children: any[]) {
+    let currentDomNode = parent.firstChild;
+
+    children.forEach(child => {
+        if (typeof child === 'function') {
+            // Signal
+            let signalTextNode: Text | null = null;
+            if (currentDomNode && currentDomNode.nodeType === Node.TEXT_NODE) {
+                signalTextNode = currentDomNode as Text;
+                currentDomNode = currentDomNode.nextSibling;
+            }
+
+            const stop = createEffect(() => {
+                const newValue = child();
+                const textContent = String(newValue ?? '');
+
+                if (!signalTextNode) {
+                    signalTextNode = document.createTextNode(textContent);
+                    parent.appendChild(signalTextNode);
+                } else {
+                    signalTextNode.data = textContent;
+                }
+            });
+            addNodeCleanup(parent, stop);
+
+        } else if (child instanceof Node) {
+            if (currentDomNode === child) {
+                 currentDomNode = currentDomNode.nextSibling;
+            } else {
+                 parent.insertBefore(child, currentDomNode);
+            }
+
+        } else {
+             // String/Number
+             const textContent = String(child);
+             if (currentDomNode && currentDomNode.nodeType === Node.TEXT_NODE) {
+                 const textNode = currentDomNode as Text;
+                 if (textNode.data !== textContent) textNode.data = textContent;
+                 currentDomNode = currentDomNode.nextSibling;
+             } else {
+                 parent.insertBefore(document.createTextNode(textContent), currentDomNode);
+             }
+        }
+    });
+
+    // Remove remaining nodes
+    while (currentDomNode) {
+        const next = currentDomNode.nextSibling;
+        dispose(currentDomNode);
+        parent.removeChild(currentDomNode);
+        currentDomNode = next;
     }
 }
 
@@ -98,9 +206,6 @@ export function mount(component: () => Node, root: HTMLElement) {
 
 // Fragment support (basic)
 export const Fragment: Component = (props) => {
-    // This is tricky because pure DOM API doesn't support "rendering" a fragment to a variable easily that holds reactivity without a parent.
-    // For now, let's treat it as returning an array of nodes if we could, but our signature says Node.
-    // A DocumentFragment is the closest thing.
     const fragment = document.createDocumentFragment();
     (props.children || []).forEach((child: any) => appendChild(fragment, child));
     return fragment;

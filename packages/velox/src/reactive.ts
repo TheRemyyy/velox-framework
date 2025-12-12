@@ -4,6 +4,7 @@ let context: Subscriber | null = null;
 interface Subscriber {
   execute(): void;
   dependencies: Set<Set<Subscriber>>;
+  cleanups: (() => void)[];
 }
 
 type Getter<T> = () => T;
@@ -43,10 +44,21 @@ export function createSignal<T>(initialValue: T): [Getter<T>, Setter<T>] {
 }
 
 /**
+ * Registers a cleanup function that runs before the current effect re-executes or is disposed.
+ * @param fn The cleanup function.
+ */
+export function onCleanup(fn: () => void) {
+  if (context) {
+    context.cleanups.push(fn);
+  }
+}
+
+/**
  * Creates a side effect that runs immediately and re-runs whenever its dependencies change.
  * @param fn The function to execute.
+ * @returns A dispose function to stop the effect manually.
  */
-export function createEffect(fn: () => void): void {
+export function createEffect(fn: () => void): () => void {
   const effect: Subscriber = {
     execute() {
       cleanup(effect);
@@ -59,9 +71,12 @@ export function createEffect(fn: () => void): void {
       }
     },
     dependencies: new Set(),
+    cleanups: [],
   };
 
   effect.execute();
+
+  return () => cleanup(effect);
 }
 
 /**
@@ -78,4 +93,6 @@ export function createMemo<T>(fn: () => T): Getter<T> {
 function cleanup(subscriber: Subscriber) {
   subscriber.dependencies.forEach((subs) => subs.delete(subscriber));
   subscriber.dependencies.clear();
+  subscriber.cleanups.forEach((c) => c());
+  subscriber.cleanups = [];
 }

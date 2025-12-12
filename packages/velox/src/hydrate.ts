@@ -1,40 +1,37 @@
-// src/hydrate.ts
-import { Component, mount } from './dom';
+import { Component, setHydrating, resetHydrationId } from './dom';
 
 /**
  * Hydrates a server-rendered application on the client.
- * For this version of Velox, we will use a simple "destructive hydration" or "remount"
- * strategy for simplicity, as true fine-grained hydration requires more complex serialization.
- *
- * However, to be "Professional", we should attempt to attach listeners.
- *
- * Given the time constraints and architecture, we will clear the root and mount fresh.
- * This ensures consistency. True resumability is a V2 feature.
- *
- * Wait, the user asked for "Best Performance" and "100% SEO".
- * Re-rendering everything is bad for FID (First Input Delay).
- *
- * Let's try a basic hydration:
- * We assume the structure is identical. We walk the DOM and bind events/signals.
  */
-
 export function hydrate(component: Component, root: HTMLElement) {
-    // For V1, to ensure correctness and speed of development vs complexity risk:
-    // We will do a fast takeover.
-    // Ideally, we would walk the tree.
-
-    // Let's implement a simple "Client Side Takeover" which is valid for many frameworks
-    // but not "Resumable".
-    // But since our DOM renderer is fine-grained, we can just run it.
-    // It will create new DOM nodes.
-    // If we replace the content, we lose the "SSR Paint" benefit if it's slow.
-
-    // Strategy: Clear and Mount.
-    // It is robust.
-
     if (import.meta.env.DEV) {
         console.log('Velox: Hydrating...');
     }
 
-    mount(component as any, root);
+    setHydrating(true);
+    resetHydrationId();
+
+    try {
+        const node = component({});
+
+        // If the returned node is not already in the root (mismatch or new node),
+        // we append it. If it was hydrated, it's already there.
+        // But wait, if it was hydrated, `h` returned the existing node.
+        // The existing node is a child of `root` (usually).
+        // If `h` returns it, `node.parentNode` should be `root`.
+
+        if (node.parentNode !== root) {
+            // Mismatch occurred or root structure was different.
+            // Fallback: Clear and mount.
+            console.warn('Velox: Hydration mismatch. Falling back to client render.');
+            root.textContent = '';
+            root.appendChild(node);
+        }
+    } catch (e) {
+        console.error('Velox: Hydration error', e);
+        root.textContent = '';
+        // Could retry rendering without hydration flag?
+    } finally {
+        setHydrating(false);
+    }
 }

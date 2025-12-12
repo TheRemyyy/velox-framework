@@ -1,5 +1,5 @@
 import { createSignal, createEffect } from './reactive';
-import { h, Component } from './dom';
+import { h, Component, dispose, addNodeCleanup } from './dom';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -18,30 +18,33 @@ export const Router: Component = (props: any) => {
 };
 
 export const Route: Component = (props: any) => {
-    // In SSR, we can't create DOM nodes easily with this router structure without a virtual context.
-    // For V1, we will gracefully degrade or return empty if not browser, or handle basic SSR if possible.
-    // But since `h` is DOM-based, SSR uses `hSSR`.
-    // We need to make Router universal or specific for DOM.
-    // Given the architecture, this Router is for DOM Client Side.
     if (!isBrowser) return null as any;
 
     const { path: routePath, component } = props;
 
-    const container = document.createElement('div');
-    container.setAttribute('data-router-outlet', routePath);
-    container.style.display = 'contents';
+    const container = h('div', {
+        'data-router-outlet': routePath,
+        style: { display: 'contents' }
+    }) as HTMLElement;
 
-    createEffect(() => {
+    const stop = createEffect(() => {
         const currentPath = path();
-        container.textContent = ''; // clear
 
-        if (currentPath === routePath || (routePath === '*' && !container.hasChildNodes())) {
+        // Clean up previous children
+        container.childNodes.forEach(child => dispose(child));
+        container.textContent = '';
+
+        const match = matchRoute(routePath, currentPath);
+
+        if (match) {
             if (typeof component === 'function') {
-                const node = component({});
+                const node = component({ params: match.params });
                 container.appendChild(node);
             }
         }
     });
+
+    addNodeCleanup(container, stop);
 
     return container;
 };
@@ -66,4 +69,26 @@ export function navigate(to: string) {
         window.history.pushState({}, '', to);
         setPath(to);
     }
+}
+
+function matchRoute(routePath: string, currentPath: string) {
+    if (routePath === '*') return { params: {} };
+
+    const routeSegments = routePath.split('/').filter(Boolean);
+    const pathSegments = currentPath.split('/').filter(Boolean);
+
+    if (routeSegments.length !== pathSegments.length) return null;
+
+    const params: Record<string, string> = {};
+    for (let i = 0; i < routeSegments.length; i++) {
+        const routeSeg = routeSegments[i];
+        const pathSeg = pathSegments[i];
+
+        if (routeSeg.startsWith(':')) {
+            params[routeSeg.slice(1)] = pathSeg;
+        } else if (routeSeg !== pathSeg) {
+            return null;
+        }
+    }
+    return { params };
 }
