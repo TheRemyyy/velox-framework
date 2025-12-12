@@ -1,6 +1,6 @@
 import { createSignal, createEffect, Getter, Setter } from './reactive';
 import { h, Component, dispose, addNodeCleanup, Fragment, VNode } from './dom';
-import { hSSR, SafeString, SSRVNode, Fragment as FragmentSSR } from './ssr';
+import { hSSR, Fragment as FragmentSSR } from './ssr';
 import { getContext, pushContext, popContext } from './context';
 
 const isBrowser = typeof window !== 'undefined';

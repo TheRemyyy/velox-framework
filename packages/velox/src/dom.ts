@@ -59,7 +59,6 @@ export function h(tag: string | Component, props: Props | null, ...children: any
              const currentId = ctx.hydrationPath;
 
              let element: HTMLElement | null = null;
-             let claimed = false;
 
              if (isHydrating) {
                   // Hierarchical ID lookup
@@ -67,7 +66,6 @@ export function h(tag: string | Component, props: Props | null, ...children: any
                   if (found && found.tagName.toLowerCase() === tag.toLowerCase()) {
                       element = found as HTMLElement;
                       element.removeAttribute('data-hid');
-                      claimed = true;
                   }
              }
 
@@ -138,7 +136,7 @@ export function h(tag: string | Component, props: Props | null, ...children: any
     }
 }
 
-function handleSignal(parent: HTMLElement, signal: () => any, cursor: Node | null): Node {
+function handleSignal(_parent: HTMLElement, signal: () => any, cursor: Node | null): Node {
     let textNode: Text;
     // Try to claim cursor if it's text
     if (cursor && cursor.nodeType === Node.TEXT_NODE) {
@@ -197,7 +195,10 @@ export const Fragment: Component = (props) => {
             const fragment = document.createDocumentFragment();
             const children = props.children || [];
 
-            children.flat().forEach((child: any, i: number) => {
+            // Normalize children logic repeated from h
+            const flatChildren = Array.isArray(children) ? children.flat() : [children];
+
+            flatChildren.forEach((child: any, i: number) => {
                 const childId = `${currentId}.${i}`;
                 pushContext({ hydrationPath: childId });
 

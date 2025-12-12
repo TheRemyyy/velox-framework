@@ -1,4 +1,5 @@
-import { Component, setHydrating, resetHydrationId } from './dom';
+import { Component, setHydrating } from './dom';
+import { resetContext } from './context';
 
 /**
  * Hydrates a server-rendered application on the client.
@@ -9,16 +10,11 @@ export function hydrate(component: Component, root: HTMLElement) {
     }
 
     setHydrating(true);
-    resetHydrationId();
+    resetContext();
 
     try {
-        const node = component({});
-
-        // If the returned node is not already in the root (mismatch or new node),
-        // we append it. If it was hydrated, it's already there.
-        // But wait, if it was hydrated, `h` returned the existing node.
-        // The existing node is a child of `root` (usually).
-        // If `h` returns it, `node.parentNode` should be `root`.
+        const vnode = component({});
+        const node = vnode.exec();
 
         if (node.parentNode !== root) {
             // Mismatch occurred or root structure was different.

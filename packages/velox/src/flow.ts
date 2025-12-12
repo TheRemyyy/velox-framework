@@ -1,5 +1,5 @@
 import { createEffect } from './reactive';
-import { h, Component, dispose, addNodeCleanup, VNode } from './dom';
+import { h, Component, dispose, addNodeCleanup } from './dom';
 import { hSSR } from './ssr';
 
 const isServer = typeof window === 'undefined';
@@ -49,8 +49,7 @@ export const For: Component = (props: any) => {
                      if (vnode && vnode.exec) {
                         node = vnode.exec();
                      } else {
-                        // Fallback if renderer returned something else
-                        // Should not happen with strict types
+                        // Fallback
                      }
                  }
 

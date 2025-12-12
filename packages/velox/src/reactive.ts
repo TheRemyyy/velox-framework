@@ -9,8 +9,8 @@ interface Subscriber {
   cleanups: (() => void)[];
 }
 
-type Getter<T> = () => T;
-type Setter<T> = (newValue: T | ((prev: T) => T)) => void;
+export type Getter<T> = () => T;
+export type Setter<T> = (newValue: T | ((prev: T) => T)) => void;
 
 /**
  * Batches signal updates to prevent multiple effect executions.

@@ -1,10 +1,15 @@
 export interface RenderContext {
     hydrationPath: string;
     routerBase: string;
+    custom: Map<any, any>;
 }
 
 // Initial context
-let contextStack: RenderContext[] = [{ hydrationPath: '0', routerBase: '' }];
+let contextStack: RenderContext[] = [{
+    hydrationPath: '0',
+    routerBase: '',
+    custom: new Map()
+}];
 
 export function pushContext(ctx: Partial<RenderContext>) {
     const parent = contextStack[contextStack.length - 1];
@@ -20,5 +25,9 @@ export function getContext() {
 }
 
 export function resetContext() {
-    contextStack = [{ hydrationPath: '0', routerBase: '' }];
+    contextStack = [{
+        hydrationPath: '0',
+        routerBase: '',
+        custom: new Map()
+    }];
 }
