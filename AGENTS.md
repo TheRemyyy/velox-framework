@@ -4,7 +4,8 @@
 1. **Performance First**: All code must be optimized for speed. Avoid unnecessary allocations.
 2. **Type Safety**: strict TypeScript must be used. No `any` unless absolutely necessary and justified.
 3. **Zero Dependencies**: The core framework should rely on as few external dependencies as possible.
-4. **Professionalism**: Code must be clean, commented, and follow standard formatting (Prettier).
+4. **Architecture**: Use the **Lazy VNode Factory** pattern. Components must return a VNode (`{ exec: () => Node }`), not a direct Node. This enables Context and Hydration logic.
+5. **Professionalism**: Code must be clean, commented, and follow standard formatting (Prettier).
 
 ## Testing
 - All core features must be tested with Vitest.
