@@ -1,0 +1,10 @@
+{
+  "name": "vite-plugin-velox",
+  "version": "0.0.1",
+  "main": "index.js",
+  "dependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-transform-react-jsx": "^7.0.0",
+    "vite": "^5.0.0"
+  }
+}

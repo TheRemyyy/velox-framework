@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "jsx": "react-jsx",
+    "jsxImportSource": "velox",
+    "paths": {
+      "velox": ["../packages/velox/src/index.ts"],
+      "velox/jsx-runtime": ["../packages/velox/src/jsx-runtime/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

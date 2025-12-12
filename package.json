@@ -1,0 +1,32 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheRemyyy/velox-framework.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/TheRemyyy/velox-framework/issues"
+  },
+  "homepage": "https://github.com/TheRemyyy/velox-framework#readme",
+  "workspaces": [
+    "packages/*",
+    "playground"
+  ],
+  "devDependencies": {
+    "@types/node": "^25.0.0",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vitest": "^4.0.15"
+  }
+}
