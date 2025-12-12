@@ -74,7 +74,7 @@ export function hSSR(tag: string | SSRComponent, props: any, ...children: any[])
 
             html += '>';
 
-            normalizedChildren.forEach((child: any, i: number) => {
+            normalizedChildren.forEach((child, i) => {
                 const childId = `${currentId}.${i}`;
                 pushContext({ hydrationPath: childId });
                 html += renderToStringChild(child);
@@ -132,4 +132,28 @@ export function renderToString(component: SSRComponent): SafeString {
     resetContext();
     const vnode = component({});
     return vnode.exec();
+}
+
+export async function renderToStringAsync(component: SSRComponent): Promise<SafeString> {
+    resetContext(); // Start fresh
+
+    const MAX_PASSES = 10;
+    for (let i = 0; i < MAX_PASSES; i++) {
+        if (i > 0) resetContext(true); // Keep cache
+
+        const promises = new Set<Promise<any>>();
+        pushContext({ suspense: promises });
+
+        const vnode = component({});
+        const result = vnode.exec();
+
+        popContext();
+
+        if (promises.size === 0) {
+            return result;
+        }
+
+        await Promise.all(promises);
+    }
+    return new SafeString('<!-- Suspense Timeout -->');
 }

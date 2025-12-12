@@ -2,6 +2,7 @@ export interface RenderContext {
     hydrationPath: string;
     routerBase: string;
     custom: Map<any, any>;
+    suspense?: Set<Promise<any>>;
 }
 
 // Initial context
@@ -24,10 +25,11 @@ export function getContext() {
     return contextStack[contextStack.length - 1];
 }
 
-export function resetContext() {
+export function resetContext(keepCustom = false) {
+    const oldCustom = (keepCustom && contextStack.length > 0) ? contextStack[0].custom : new Map();
     contextStack = [{
         hydrationPath: '0',
         routerBase: '',
-        custom: new Map()
+        custom: oldCustom
     }];
 }

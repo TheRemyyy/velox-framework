@@ -9,10 +9,11 @@ Velox is a next-generation JavaScript framework built for extreme performance, 1
 - **🚀 Blazing Fast**: Zero Virtual DOM. Fine-grained reactivity using Signals.
 - **⚡ 100% SEO**: First-class Server-Side Rendering (SSR) support with **Robust Hierarchical Hydration**.
 - **🛡️ Secure**: Built-in XSS protection and Type Safety.
-- **🔥 React-like Syntax**: Use JSX and familiar hooks (`createSignal`, `createEffect`, `useContext`).
+- **🔥 React-like Syntax**: Use JSX and familiar hooks (`createSignal`, `createEffect`, `useContext`, `createResource`).
 - **📦 Zero Dependencies**: Lightweight core.
 - **🌐 Advanced Router**: Built-in router supporting nested routes, dynamic parameters (`/user/:id`), and SSR.
 - **🔄 Smart Control Flow**: Optimized `<For>` component for keyed list rendering and reconciliation.
+- **⏳ Suspense**: Built-in async component support (`<Suspense>`) with async SSR.
 
 ## Architecture
 
@@ -71,6 +72,34 @@ function Toolbar() {
 }
 ```
 
+### Suspense & Async SSR
+
+Velox supports async components via `Suspense` and `createResource`.
+
+```tsx
+import { createResource, Suspense } from 'velox';
+
+const AsyncData = () => {
+  const [data] = createResource('user', () => fetch('/api/user').then(r => r.json()));
+  return <div>User: {data()?.name}</div>;
+};
+
+function App() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AsyncData />
+    </Suspense>
+  );
+}
+```
+
+Server-side (waits for data):
+```tsx
+import { renderToStringAsync } from 'velox';
+// ...
+const html = await renderToStringAsync(App);
+```
+
 ### Router & SSR
 
 The Router supports nested layouts and SSR configuration.
@@ -85,26 +114,6 @@ app.get('*', (req, res) => {
   const html = renderToString(App);
   res.send(html);
 });
-```
-
-```tsx
-// App.tsx
-import { Router, Route, Outlet, Link } from 'velox';
-
-function App() {
-  return (
-    <Router>
-      <nav>
-        <Link to="/">Home</Link>
-        <Link to="/user">User</Link>
-      </nav>
-      <Route path="/" component={Home} />
-      <Route path="/user" component={UserLayout}>
-        <Route path="/:id" component={UserProfile} />
-      </Route>
-    </Router>
-  );
-}
 ```
 
 ### Efficient Lists

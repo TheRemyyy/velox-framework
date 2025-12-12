@@ -1,10 +1,12 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { hSSR, resetHydrationId } from './ssr';
+import { hSSR, resetHydrationId, renderToStringAsync } from './ssr';
 import { createSignal } from './reactive';
+import { resetContext } from './context';
+import { Suspense, createResource } from './suspense';
 
 describe('SSR Renderer', () => {
     beforeEach(() => {
-        resetHydrationId();
+        resetContext();
     });
 
     it('should render a simple element to string', () => {
@@ -41,5 +43,27 @@ describe('SSR Renderer', () => {
     it('should handle boolean attributes', () => {
          const html = hSSR('input', { disabled: true, readonly: false });
          expect(html.exec().toString()).toBe('<input data-hid="0" disabled />');
+    });
+
+    it('should wait for async resource with Suspense', async () => {
+        let resolve: any;
+        const p = new Promise<string>(r => resolve = r);
+
+        const AsyncCmp = () => {
+            const [data] = createResource('key', () => p.then(() => 'Loaded'));
+            return hSSR('div', null, () => data() || 'Loading');
+        };
+
+        const App = () => hSSR(Suspense as any, { fallback: hSSR('div', null, 'Fallback') },
+            hSSR(AsyncCmp, null)
+        );
+
+        const renderPromise = renderToStringAsync(App);
+
+        resolve('done');
+
+        const html = await renderPromise;
+        expect(html.toString()).toContain('Loaded');
+        expect(html.toString()).not.toContain('Fallback');
     });
 });

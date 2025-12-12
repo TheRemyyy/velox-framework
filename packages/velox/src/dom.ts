@@ -4,11 +4,11 @@ import { getContext, pushContext, popContext, resetContext } from './context';
 export interface VNode {
     exec: () => Node;
 }
-export type Component = (props: any) => VNode;
+export type Component = (props: Props) => VNode;
 export type Factory = VNode;
 
 // Basic Types
-type Props = Record<string, any>;
+export type Props = Record<string, any>;
 
 let isHydrating = false;
 
@@ -35,22 +35,24 @@ export function dispose(node: Node) {
         vNode[CLEANUP_KEY] = undefined;
     }
     // Recursive
-    node.childNodes.forEach(child => dispose(child));
+    if (node.hasChildNodes()) {
+        node.childNodes.forEach(child => dispose(child));
+    }
 }
 
 export function h(tag: string | Component, props: Props | null, ...children: any[]): VNode {
-    props = props || {};
+    const safeProps = props || {};
     let normalizedChildren = children.flat().filter(c => c != null && c !== true && c !== false);
 
-    if (normalizedChildren.length === 0 && props.children) {
-        normalizedChildren = Array.isArray(props.children) ? props.children.flat() : [props.children];
+    if (normalizedChildren.length === 0 && safeProps.children) {
+        normalizedChildren = Array.isArray(safeProps.children) ? safeProps.children.flat() : [safeProps.children];
     }
 
     return {
         exec: () => {
              if (typeof tag === 'function') {
                  // Component
-                 const vnode = tag({ ...props, children: normalizedChildren });
+                 const vnode = tag({ ...safeProps, children: normalizedChildren });
                  return vnode.exec();
              }
 
@@ -74,7 +76,7 @@ export function h(tag: string | Component, props: Props | null, ...children: any
              }
 
              // Apply Props
-             for (const [key, value] of Object.entries(props!)) {
+             for (const [key, value] of Object.entries(safeProps)) {
                 if (key.startsWith('on') && typeof value === 'function') {
                   const eventName = key.toLowerCase().substring(2);
                   element.addEventListener(eventName, (e) => batch(() => value(e)));
@@ -100,12 +102,12 @@ export function h(tag: string | Component, props: Props | null, ...children: any
 
                  let childNode: Node | null = null;
 
-                 if (child && typeof child === 'object' && child.exec) {
+                 if (child && typeof child === 'object' && 'exec' in child) {
                      // VNode
                      childNode = (child as VNode).exec();
                  } else if (typeof child === 'function') {
                      // Signal
-                     childNode = handleSignal(element!, child, domCursor);
+                     childNode = handleSignal(child, domCursor);
                  } else {
                      // Static Text
                      childNode = handleStaticText(String(child), domCursor);
@@ -116,7 +118,13 @@ export function h(tag: string | Component, props: Props | null, ...children: any
                      if (domCursor === childNode) {
                          domCursor = domCursor.nextSibling;
                      } else {
-                         element!.insertBefore(childNode, domCursor);
+                         // Robust check before insert
+                         if (childNode.parentNode !== element) {
+                             element!.insertBefore(childNode, domCursor);
+                         } else {
+                             // It is already child, but not at cursor. Move it.
+                             element!.insertBefore(childNode, domCursor);
+                         }
                      }
                  }
 
@@ -126,8 +134,11 @@ export function h(tag: string | Component, props: Props | null, ...children: any
              // Cleanup remaining nodes (mismatches)
              while (domCursor) {
                  const next = domCursor.nextSibling;
-                 dispose(domCursor);
-                 element.removeChild(domCursor);
+                 // Robust check before remove
+                 if (domCursor.parentNode === element) {
+                     dispose(domCursor);
+                     element.removeChild(domCursor);
+                 }
                  domCursor = next;
              }
 
@@ -136,7 +147,7 @@ export function h(tag: string | Component, props: Props | null, ...children: any
     }
 }
 
-function handleSignal(_parent: HTMLElement, signal: () => any, cursor: Node | null): Node {
+function handleSignal(signal: () => unknown, cursor: Node | null): Node {
     let textNode: Text;
     // Try to claim cursor if it's text
     if (cursor && cursor.nodeType === Node.TEXT_NODE) {
@@ -195,7 +206,6 @@ export const Fragment: Component = (props) => {
             const fragment = document.createDocumentFragment();
             const children = props.children || [];
 
-            // Normalize children logic repeated from h
             const flatChildren = Array.isArray(children) ? children.flat() : [children];
 
             flatChildren.forEach((child: any, i: number) => {
@@ -204,7 +214,7 @@ export const Fragment: Component = (props) => {
 
                 let node: Node | null = null;
                 if (child && child.exec) node = child.exec();
-                else if (typeof child === 'function') node = handleSignal(null as any, child, null);
+                else if (typeof child === 'function') node = handleSignal(child, null);
                 else node = document.createTextNode(String(child));
 
                 if (node) fragment.appendChild(node);
