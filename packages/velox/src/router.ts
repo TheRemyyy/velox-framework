@@ -1,10 +1,10 @@
 import { createSignal, createEffect, Getter, Setter } from './reactive';
-import { h, Component, dispose, addNodeCleanup, Fragment } from './dom';
-import { hSSR, SafeString } from './ssr';
+import { h, Component, dispose, addNodeCleanup, Fragment, VNode } from './dom';
+import { hSSR, SafeString, SSRVNode, Fragment as FragmentSSR } from './ssr';
+import { getContext, pushContext, popContext } from './context';
 
 const isBrowser = typeof window !== 'undefined';
 
-// Global router state
 let pathSignal: [Getter<string>, Setter<string>] | null = null;
 
 function getPathSignal(): [Getter<string>, Setter<string>] {
@@ -15,13 +15,11 @@ function getPathSignal(): [Getter<string>, Setter<string>] {
     return pathSignal;
 }
 
-// Export for SSR setup
 export function configureRouter(url: string) {
     const [_, setPath] = getPathSignal();
     setPath(url);
 }
 
-// Listen to popstate
 if (isBrowser) {
     window.addEventListener('popstate', () => {
         const [_, setPath] = getPathSignal();
@@ -33,12 +31,15 @@ export const Router: Component = (props: any) => {
     if (props.url) {
         configureRouter(props.url);
     }
-    return props.children;
+    if (!isBrowser) {
+        return hSSR(FragmentSSR, { children: props.children }) as any;
+    }
+    return h(Fragment, { children: props.children });
 };
 
 export const Outlet: Component = (props: any) => {
     if (!isBrowser) {
-        return hSSR(Fragment, { children: props.children }) as any;
+        return hSSR(FragmentSSR, { children: props.children }) as any;
     }
     return h(Fragment, { children: props.children });
 };
@@ -47,68 +48,85 @@ export const Route: Component = (props: any) => {
     const { path: routePath, component, exact = true, children } = props;
     const [getPath] = getPathSignal();
 
+    const ctx = getContext();
+    const parentBase = ctx.routerBase;
+
+    const fullPath = resolvePath(parentBase, routePath);
+
     if (!isBrowser) {
-        // SSR Implementation
         const currentPath = getPath();
-        const match = matchRoute(routePath, currentPath, exact);
+        const match = matchRoute(fullPath, currentPath, exact);
 
         let content: any = null;
         if (match && typeof component === 'function') {
-             content = hSSR(component, { params: match.params, children });
+             const matchedUrl = match.url || fullPath;
+             const wrappedChildren = wrapChildren(children, matchedUrl);
+
+             content = hSSR(component, { params: match.params, children: wrappedChildren });
         }
 
-        // Wrap in container to match Client structure
         return hSSR('div', {
             'data-router-outlet': routePath,
             style: { display: 'contents' }
         }, content) as any;
     }
 
-    // Client Implementation
+    // Client
     const container = h('div', {
         'data-router-outlet': routePath,
         style: { display: 'contents' }
-    }) as HTMLElement;
+    }) as any as VNode;
 
-    const stop = createEffect(() => {
-        const currentPath = getPath();
+    const originalExec = container.exec;
+    container.exec = () => {
+        const el = originalExec();
+        const stop = createEffect(() => {
+            const currentPath = getPath();
 
-        // Clean up previous children
-        container.childNodes.forEach(child => dispose(child));
-        container.textContent = '';
+            el.childNodes.forEach((child: Node) => dispose(child));
+            el.textContent = '';
 
-        const match = matchRoute(routePath, currentPath, exact);
+            const match = matchRoute(fullPath, currentPath, exact);
 
-        if (match) {
-            if (typeof component === 'function') {
-                const node = component({ params: match.params, children });
-                container.appendChild(node);
+            if (match) {
+                if (typeof component === 'function') {
+                    const matchedUrl = match.url;
+
+                    const wrappedChildren = wrapChildren(children, matchedUrl);
+
+                    const nodeVNode = component({ params: match.params, children: wrappedChildren });
+                    const node = nodeVNode.exec();
+                    el.appendChild(node);
+                }
             }
-        }
-    });
-
-    addNodeCleanup(container, stop);
+        });
+        addNodeCleanup(el, stop);
+        return el;
+    };
 
     return container;
 };
 
 export const Link: Component = (props: any) => {
     const { to, children, ...rest } = props;
+    const ctx = getContext();
+    const base = ctx.routerBase;
+    const fullTo = resolvePath(base, to);
 
     const onClick = (e: MouseEvent) => {
         e.preventDefault();
         if (isBrowser) {
-            window.history.pushState({}, '', to);
+            window.history.pushState({}, '', fullTo);
             const [_, setPath] = getPathSignal();
-            setPath(to);
+            setPath(fullTo);
         }
     };
 
     if (!isBrowser) {
-        return hSSR('a', { href: to, ...rest }, children) as any;
+        return hSSR('a', { href: fullTo, ...rest }, children) as any;
     }
 
-    return h('a', { href: to, onClick, ...rest }, children);
+    return h('a', { href: fullTo, onClick, ...rest }, children);
 };
 
 export function navigate(to: string) {
@@ -119,8 +137,31 @@ export function navigate(to: string) {
     }
 }
 
+function resolvePath(base: string, path: string) {
+    if (path.startsWith('/')) return path;
+    const cleanBase = base === '/' ? '' : base;
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${cleanBase}/${cleanPath}`;
+}
+
+function wrapChildren(children: any[], newBase: string) {
+    return children.map((child: any) => {
+         if (child && child.exec) {
+             return {
+                 exec: () => {
+                     pushContext({ routerBase: newBase });
+                     const n = child.exec();
+                     popContext();
+                     return n;
+                 }
+             };
+         }
+         return child;
+    });
+}
+
 function matchRoute(routePath: string, currentPath: string, exact: boolean) {
-    if (routePath === '*') return { params: {} };
+    if (routePath === '*') return { params: {}, url: currentPath };
 
     const routeSegments = routePath.split('/').filter(Boolean);
     const pathSegments = currentPath.split('/').filter(Boolean);
@@ -129,6 +170,8 @@ function matchRoute(routePath: string, currentPath: string, exact: boolean) {
     if (!exact && pathSegments.length < routeSegments.length) return null;
 
     const params: Record<string, string> = {};
+    let matchedUrl = '';
+
     for (let i = 0; i < routeSegments.length; i++) {
         const routeSeg = routeSegments[i];
         const pathSeg = pathSegments[i];
@@ -139,5 +182,8 @@ function matchRoute(routePath: string, currentPath: string, exact: boolean) {
             return null;
         }
     }
-    return { params };
+
+    matchedUrl = '/' + pathSegments.slice(0, routeSegments.length).join('/');
+
+    return { params, url: matchedUrl };
 }

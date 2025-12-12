@@ -1,5 +1,5 @@
 import { createEffect } from './reactive';
-import { h, Component, dispose, addNodeCleanup } from './dom';
+import { h, Component, dispose, addNodeCleanup, VNode } from './dom';
 import { hSSR } from './ssr';
 
 const isServer = typeof window === 'undefined';
@@ -7,80 +7,80 @@ const isServer = typeof window === 'undefined';
 export const For: Component = (props: any) => {
     const each = props.each as () => any[];
     const renderer = props.children[0];
-    const keyFn = props.key; // Optional key function
+    const keyFn = props.key;
 
     if (isServer) {
         const list = each() || [];
         const children = list.map((item, i) => renderer(item, () => i));
-        // Return as any because SSR returns SafeString but Component expects Node.
-        // In SSR flow, this is handled.
         return hSSR('div', { style: { display: 'contents' } }, ...children) as any;
     }
 
-    // Wrapper container with display: contents to minimize layout impact
-    const container = h('div', { style: { display: 'contents' } }) as HTMLElement;
+    const containerVNode = h('div', { style: { display: 'contents' } });
 
-    // Map of rendered items: Key -> Array of Nodes (to handle duplicates)
-    let renderedItems = new Map<any, Node[]>();
+    const originalExec = containerVNode.exec;
+    containerVNode.exec = () => {
+        const container = originalExec() as HTMLElement;
 
-    const stop = createEffect(() => {
-        const list = each() || [];
-        const newRenderedItems = new Map<any, Node[]>();
+        let renderedItems = new Map<any, Node[]>();
 
-        // Create a pool of existing nodes to reuse
-        // We clone the arrays because we will shift() from them
-        const pool = new Map<any, Node[]>();
-        renderedItems.forEach((nodes, key) => {
-             pool.set(key, [...nodes]);
-        });
+        const stop = createEffect(() => {
+            const list = each() || [];
+            const newRenderedItems = new Map<any, Node[]>();
+            const pool = new Map<any, Node[]>();
 
-        // Start diffing from the beginning of the container
-        let currentDomNode = container.firstChild;
-
-        list.forEach((item, index) => {
-             const key = keyFn ? keyFn(item, index) : item;
-
-             let nodes = pool.get(key);
-             let node: Node | undefined;
-
-             if (nodes && nodes.length > 0) {
-                 node = nodes.shift();
-             }
-
-             if (!node) {
-                 node = renderer(item, () => index);
-             }
-
-             if (node) {
-                 // Register in new map
-                 if (!newRenderedItems.has(key)) newRenderedItems.set(key, []);
-                 newRenderedItems.get(key)!.push(node);
-
-                 // DOM Reconciliation
-                 if (node !== currentDomNode) {
-                     // Move or Insert
-                     container.insertBefore(node, currentDomNode);
-                 } else {
-                     // Match, advance cursor
-                     currentDomNode = currentDomNode.nextSibling;
-                 }
-             }
-        });
-
-        // Cleanup remaining nodes in pool (not reused)
-        pool.forEach((nodes) => {
-            nodes.forEach(node => {
-                dispose(node);
-                if (node.parentNode === container) {
-                    container.removeChild(node);
-                }
+            renderedItems.forEach((nodes, key) => {
+                 pool.set(key, [...nodes]);
             });
+
+            let currentDomNode = container.firstChild;
+
+            list.forEach((item, index) => {
+                 const key = keyFn ? keyFn(item, index) : item;
+
+                 let nodes = pool.get(key);
+                 let node: Node | undefined;
+
+                 if (nodes && nodes.length > 0) {
+                     node = nodes.shift();
+                 }
+
+                 if (!node) {
+                     const vnode = renderer(item, () => index);
+                     if (vnode && vnode.exec) {
+                        node = vnode.exec();
+                     } else {
+                        // Fallback if renderer returned something else
+                        // Should not happen with strict types
+                     }
+                 }
+
+                 if (node) {
+                     if (!newRenderedItems.has(key)) newRenderedItems.set(key, []);
+                     newRenderedItems.get(key)!.push(node);
+
+                     if (node !== currentDomNode) {
+                         container.insertBefore(node, currentDomNode);
+                     } else {
+                         currentDomNode = currentDomNode.nextSibling;
+                     }
+                 }
+            });
+
+            pool.forEach((nodes) => {
+                nodes.forEach(node => {
+                    dispose(node);
+                    if (node.parentNode === container) {
+                        container.removeChild(node);
+                    }
+                });
+            });
+
+            renderedItems = newRenderedItems;
         });
 
-        renderedItems = newRenderedItems;
-    });
+        addNodeCleanup(container, stop);
+        return container;
+    };
 
-    addNodeCleanup(container, stop);
-
-    return container;
+    return containerVNode;
 };

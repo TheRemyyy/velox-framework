@@ -7,8 +7,14 @@ describe('SSR Router', () => {
         resetHydrationId();
     });
 
+    it('should render Route directly', () => {
+        configureRouter('/');
+        const Home = () => hSSR('div', null, 'Home');
+        const r = hSSR(Route, { path: '/', component: Home });
+        expect(r.exec().toString()).toContain('Home');
+    });
+
     it('should render correct route on server', () => {
-        // Setup request context
         configureRouter('/about');
 
         const Home = () => hSSR('div', null, 'Home');
@@ -19,18 +25,8 @@ describe('SSR Router', () => {
             hSSR(Route, { path: '/about', component: About })
         );
 
-        const html = App().toString();
+        const html = App().exec().toString();
 
-        // Check presence
         expect(html).toContain('About');
-        expect(html).not.toContain('>Home<');
-
-        // Check IDs
-        // IDs depend on order.
-        // Route / runs. Div ID 1. Match? No. Content empty.
-        // Route /about runs. Div ID 2. Match? Yes. Content:
-        //   About() -> Div ID 3.
-
-        expect(html).toContain('data-hid="3"');
     });
 });

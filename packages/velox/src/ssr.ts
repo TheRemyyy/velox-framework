@@ -1,29 +1,23 @@
-export type SSRComponent = (props: any) => SafeString | Promise<SafeString>;
+import { getContext, pushContext, popContext, resetContext } from './context';
+
+export type SSRComponent = (props: any) => SSRVNode;
+
+export interface SSRVNode {
+    exec: () => SafeString;
+}
+
+export const resetHydrationId = resetContext;
 
 const VOID_ELEMENTS = new Set([
   'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
   'link', 'meta', 'param', 'source', 'track', 'wbr'
 ]);
 
-// Global hydration counter
-let hydrationId = 0;
-
-/**
- * Resets the global hydration ID counter.
- * Call this before rendering a new request on the server.
- */
-export function resetHydrationId() {
-    hydrationId = 0;
-}
-
 export class SafeString {
     constructor(public value: string) {}
     toString() { return this.value; }
 }
 
-/**
- * Escapes HTML special characters to prevent XSS.
- */
 function escapeHtml(str: string): string {
     return str
         .replace(/&/g, '&amp;')
@@ -33,74 +27,99 @@ function escapeHtml(str: string): string {
         .replace(/'/g, '&#039;');
 }
 
-/**
- * Renders a component tree to an HTML string.
- */
-export function renderToString(tag: string | SSRComponent | any, props: any = {}, ...children: any[]): SafeString {
+export function hSSR(tag: string | SSRComponent, props: any, ...children: any[]): SSRVNode {
     props = props || {};
-    const normalizedChildren = children.flat().filter(c => c != null && c !== true && c !== false);
+    let normalizedChildren = children.flat().filter(c => c != null && c !== true && c !== false);
 
-    // Handle Component
-    if (typeof tag === 'function') {
-        const result = tag({ ...props, children: normalizedChildren });
-        if (result instanceof SafeString) return result;
-        return new SafeString(String(result));
+    if (normalizedChildren.length === 0 && props.children) {
+        normalizedChildren = Array.isArray(props.children) ? props.children.flat() : [props.children];
     }
 
-    // Handle Fragment
-    if (Array.isArray(tag)) {
-        return new SafeString(tag.map(c => renderToStringChild(c)).join(''));
-    }
-
-    // Handle HTML Element
-    const tagName = tag as string;
-    hydrationId++;
-    let html = `<${tagName} data-hid="${hydrationId}"`;
-
-    // Attributes
-    for (const [key, value] of Object.entries(props)) {
-        if (key === 'children' || key.startsWith('on')) continue;
-        if (key === 'className') {
-            html += ` class="${escapeHtml(String(value))}"`;
-        } else if (key === 'style' && typeof value === 'object') {
-             const styleStr = Object.entries(value as Record<string, any>)
-                .map(([k, v]) => `${k}:${v}`)
-                .join(';');
-             html += ` style="${escapeHtml(styleStr)}"`;
-        } else {
-            // boolean attributes
-            if (value === true) {
-                 html += ` ${key}`;
-            } else if (value !== false && value != null) {
-                 html += ` ${key}="${escapeHtml(String(value))}"`;
+    return {
+        exec: () => {
+            if (typeof tag === 'function') {
+                const result = tag({ ...props, children: normalizedChildren });
+                if (result && result.exec) return result.exec();
+                return new SafeString(String(result));
             }
+
+            const ctx = getContext();
+            const currentId = ctx.hydrationPath;
+
+            const tagName = tag as string;
+            let html = `<${tagName} data-hid="${currentId}"`;
+
+            for (const [key, value] of Object.entries(props)) {
+                if (key === 'children' || key.startsWith('on')) continue;
+                if (key === 'className') {
+                    html += ` class="${escapeHtml(String(value))}"`;
+                } else if (key === 'style' && typeof value === 'object') {
+                     const styleStr = Object.entries(value as Record<string, any>)
+                        .map(([k, v]) => `${k}:${v}`)
+                        .join(';');
+                     html += ` style="${escapeHtml(styleStr)}"`;
+                } else {
+                    if (value === true) {
+                         html += ` ${key}`;
+                    } else if (value !== false && value != null) {
+                         html += ` ${key}="${escapeHtml(String(value))}"`;
+                    }
+                }
+            }
+
+            if (VOID_ELEMENTS.has(tagName)) {
+                html += ' />';
+                return new SafeString(html);
+            }
+
+            html += '>';
+
+            normalizedChildren.forEach((child: any, i: number) => {
+                const childId = `${currentId}.${i}`;
+                pushContext({ hydrationPath: childId });
+                html += renderToStringChild(child);
+                popContext();
+            });
+
+            html += `</${tagName}>`;
+            return new SafeString(html);
         }
     }
+}
 
-    if (VOID_ELEMENTS.has(tagName)) {
-        html += ' />';
-        return new SafeString(html);
-    }
+export const Fragment: SSRComponent = (props) => {
+    return {
+        exec: () => {
+            const ctx = getContext();
+            const currentId = ctx.hydrationPath;
 
-    html += '>';
+            let html = '';
+            const children = props.children || [];
 
-    // Children
-    normalizedChildren.forEach(child => {
-        html += renderToStringChild(child);
-    });
+            children.flat().forEach((child: any, i: number) => {
+                const childId = `${currentId}.${i}`;
+                pushContext({ hydrationPath: childId });
+                html += renderToStringChild(child);
+                popContext();
+            });
 
-    html += `</${tagName}>`;
-    return new SafeString(html);
+            return new SafeString(html);
+        }
+    };
 }
 
 function renderToStringChild(child: any): string {
+    if (child && child.exec) {
+        const res = child.exec();
+        if (res instanceof SafeString) return res.value;
+        return String(res);
+    }
     if (child instanceof SafeString) {
         return child.value;
     }
     if (typeof child === 'string' || typeof child === 'number') {
         return escapeHtml(String(child));
     }
-    // If it's a function (Signal), execute it
     if (typeof child === 'function') {
         const res = child();
         if (res instanceof SafeString) return res.value;
@@ -109,7 +128,8 @@ function renderToStringChild(child: any): string {
     return String(child);
 }
 
-// SSR specific `h` function
-export function hSSR(tag: string | SSRComponent, props: any, ...children: any[]): SafeString {
-     return renderToString(tag, props, ...children);
+export function renderToString(component: SSRComponent): SafeString {
+    resetContext();
+    const vnode = component({});
+    return vnode.exec();
 }
