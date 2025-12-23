@@ -1,6 +1,9 @@
 {
     "name": "@theremyyy/create-velox",
     "version": "0.0.1",
+    "publishConfig": {
+        "access": "public"
+    },
     "description": "Scaffolding tool for Velox Framework",
     "bin": {
         "create-velox": "index.js",

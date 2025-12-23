@@ -2,6 +2,9 @@
   "name": "@theremyyy/velox",
   "version": "0.0.1",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "The fastest web framework in the universe",
   "main": "./dist/velox.cjs",
   "module": "./dist/velox.js",
