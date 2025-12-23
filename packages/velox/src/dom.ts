@@ -81,10 +81,7 @@ export function h(tag: string | Component, props: Props | null, ...children: any
 
                 if (key.startsWith('on') && typeof value === 'function') {
                     const eventName = key.toLowerCase().substring(2);
-                    // DEBUG: Log event attachment
-                    console.log(`Velox: Attaching ${eventName} to`, element);
                     element.addEventListener(eventName, (e) => {
-                        console.log(`Velox: Event ${eventName} fired`, e);
                         batch(() => value(e));
                     });
                 } else {
@@ -166,7 +163,6 @@ function handleSignal(signal: () => unknown, cursor: Node | null): Node {
     const stop = createEffect(() => {
         const val = signal();
         const str = String(val ?? '');
-        console.log('Velox: Signal updated text node to:', str);
         if (textNode.data !== str) {
             textNode.data = str;
         }
