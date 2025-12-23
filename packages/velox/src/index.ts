@@ -8,3 +8,12 @@ export { createContext, useContext } from './context-api';
 export { createResource, Suspense } from './suspense';
 /// <reference path="./types.d.ts" />
 export { renderToString, renderToStringAsync, hSSR, resetHydrationId } from './ssr';
+
+declare global {
+    namespace JSX {
+        interface Element extends Node { }
+        interface IntrinsicElements {
+            [elemName: string]: any;
+        }
+    }
+}
