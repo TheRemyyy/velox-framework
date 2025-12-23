@@ -10,6 +10,8 @@
 
 *Zero VDOM. Fine-Grained Reactivity. Instant Performance.*
 
+[Installation](#installation) • [Quick Start](#quick-start) • [Project Structure](#project-structure) • [Documentation](#documentation)
+
 </div>
 
 ---
@@ -27,7 +29,7 @@ Velox is a next-generation web framework designed for ultimate performance and d
 - **🧩 Simple API** — If you know React hooks, you know Velox signals (`createSignal`, `createEffect`).
 - **🔄 Universal Compatibility** — Works seamlessly with existing JS/TS ecosystems.
 
-## Installation
+## <a id="installation"></a>📦 Installation
 
 Get started in seconds with our official scaffolding tool:
 
@@ -37,7 +39,7 @@ npm create velox@latest
 
 This command sets up a complete workspace with TypeScript, Vite, and Velox pre-configured.
 
-## Quick Start
+## <a id="quick-start"></a>⚡ Quick Start
 
 ### 1. The Basics
 
@@ -79,7 +81,7 @@ createEffect(() => {
 });
 ```
 
-## Project Structure
+## <a id="project-structure"></a>Project Structure
 
 Velox is organized as a monorepo containing the core framework and its ecosystem:
 
@@ -93,7 +95,7 @@ velox-framework/
 └── examples/                # Example applications
 ```
 
-## Documentation
+## <a id="documentation"></a>📚 Documentation
 
 Detailed documentation is available in the `docs` directory:
 
