@@ -50,99 +50,106 @@ export function h(tag: string | Component, props: Props | null, ...children: any
 
     return {
         exec: () => {
-             if (typeof tag === 'function') {
-                 // Component
-                 const vnode = tag({ ...safeProps, children: normalizedChildren });
-                 return vnode.exec();
-             }
+            if (typeof tag === 'function') {
+                // Component
+                const vnode = tag({ ...safeProps, children: normalizedChildren });
+                return vnode.exec();
+            }
 
-             // HTML Element
-             const ctx = getContext();
-             const currentId = ctx.hydrationPath;
+            // HTML Element
+            const ctx = getContext();
+            const currentId = ctx.hydrationPath;
 
-             let element: HTMLElement | null = null;
+            let element: HTMLElement | null = null;
 
-             if (isHydrating) {
-                  // Hierarchical ID lookup
-                  const found = document.querySelector(`[data-hid="${currentId}"]`);
-                  if (found && found.tagName.toLowerCase() === tag.toLowerCase()) {
-                      element = found as HTMLElement;
-                      element.removeAttribute('data-hid');
-                  }
-             }
-
-             if (!element) {
-                 element = document.createElement(tag);
-             }
-
-             // Apply Props
-             for (const [key, value] of Object.entries(safeProps)) {
-                if (key.startsWith('on') && typeof value === 'function') {
-                  const eventName = key.toLowerCase().substring(2);
-                  element.addEventListener(eventName, (e) => batch(() => value(e)));
-                } else {
-                  if (typeof value === 'function') {
-                    const stop = createEffect(() => {
-                        const newValue = value();
-                        setAttribute(element!, key, newValue);
-                    });
-                    addNodeCleanup(element, stop);
-                  } else {
-                    setAttribute(element, key, value);
-                  }
+            if (isHydrating) {
+                // Hierarchical ID lookup
+                const found = document.querySelector(`[data-hid="${currentId}"]`);
+                if (found && found.tagName.toLowerCase() === tag.toLowerCase()) {
+                    element = found as HTMLElement;
+                    element.removeAttribute('data-hid');
                 }
-             }
+            }
 
-             // Process Children
-             let domCursor = element.firstChild;
+            if (!element) {
+                element = document.createElement(tag);
+            }
 
-             normalizedChildren.forEach((child, i) => {
-                 const childId = `${currentId}.${i}`;
-                 pushContext({ hydrationPath: childId });
+            // Apply Props
+            for (const [key, value] of Object.entries(safeProps)) {
+                if (key === 'children') continue;
 
-                 let childNode: Node | null = null;
+                if (key.startsWith('on') && typeof value === 'function') {
+                    const eventName = key.toLowerCase().substring(2);
+                    // DEBUG: Log event attachment
+                    console.log(`Velox: Attaching ${eventName} to`, element);
+                    element.addEventListener(eventName, (e) => {
+                        console.log(`Velox: Event ${eventName} fired`, e);
+                        batch(() => value(e));
+                    });
+                } else {
+                    if (typeof value === 'function') {
+                        const stop = createEffect(() => {
+                            const newValue = value();
+                            setAttribute(element!, key, newValue);
+                        });
+                        addNodeCleanup(element, stop);
+                    } else {
+                        setAttribute(element, key, value);
+                    }
+                }
+            }
 
-                 if (child && typeof child === 'object' && 'exec' in child) {
-                     // VNode
-                     childNode = (child as VNode).exec();
-                 } else if (typeof child === 'function') {
-                     // Signal
-                     childNode = handleSignal(child, domCursor);
-                 } else {
-                     // Static Text
-                     childNode = handleStaticText(String(child), domCursor);
-                 }
+            // Process Children
+            let domCursor = element.firstChild;
 
-                 // Placement / Reconciliation
-                 if (childNode) {
-                     if (domCursor === childNode) {
-                         domCursor = domCursor.nextSibling;
-                     } else {
-                         // Robust check before insert
-                         if (childNode.parentNode !== element) {
-                             element!.insertBefore(childNode, domCursor);
-                         } else {
-                             // It is already child, but not at cursor. Move it.
-                             element!.insertBefore(childNode, domCursor);
-                         }
-                     }
-                 }
+            normalizedChildren.forEach((child, i) => {
+                const childId = `${currentId}.${i}`;
+                pushContext({ hydrationPath: childId });
 
-                 popContext();
-             });
+                let childNode: Node | null = null;
 
-             // Cleanup remaining nodes (mismatches)
-             while (domCursor) {
-                 const next = domCursor.nextSibling;
-                 // Robust check before remove
-                 if (domCursor.parentNode === element) {
-                     dispose(domCursor);
-                     element.removeChild(domCursor);
-                 }
-                 domCursor = next;
-             }
+                if (child && typeof child === 'object' && 'exec' in child) {
+                    // VNode
+                    childNode = (child as VNode).exec();
+                } else if (typeof child === 'function') {
+                    // Signal
+                    childNode = handleSignal(child, domCursor);
+                } else {
+                    // Static Text
+                    childNode = handleStaticText(String(child), domCursor);
+                }
 
-             return element;
+                // Placement / Reconciliation
+                if (childNode) {
+                    if (domCursor === childNode) {
+                        domCursor = domCursor.nextSibling;
+                    } else {
+                        // Robust check before insert
+                        if (childNode.parentNode !== element) {
+                            element!.insertBefore(childNode, domCursor);
+                        } else {
+                            // It is already child, but not at cursor. Move it.
+                            element!.insertBefore(childNode, domCursor);
+                        }
+                    }
+                }
+
+                popContext();
+            });
+
+            // Cleanup remaining nodes (mismatches)
+            while (domCursor) {
+                const next = domCursor.nextSibling;
+                // Robust check before remove
+                if (domCursor.parentNode === element) {
+                    dispose(domCursor);
+                    element.removeChild(domCursor);
+                }
+                domCursor = next;
+            }
+
+            return element;
         }
     }
 }
@@ -159,6 +166,7 @@ function handleSignal(signal: () => unknown, cursor: Node | null): Node {
     const stop = createEffect(() => {
         const val = signal();
         const str = String(val ?? '');
+        console.log('Velox: Signal updated text node to:', str);
         if (textNode.data !== str) {
             textNode.data = str;
         }
@@ -180,7 +188,7 @@ function handleStaticText(text: string, cursor: Node | null): Node {
 function setAttribute(element: HTMLElement, key: string, value: any) {
     if (value === null || value === undefined) {
         element.removeAttribute(key);
-    } else if (key === 'className') {
+    } else if (key === 'className' || key === 'class') {
         element.className = value;
     } else if (key === 'style' && typeof value === 'object') {
         Object.assign(element.style, value);
