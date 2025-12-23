@@ -1,0 +1,33 @@
+{
+  "name": "velox",
+  "version": "0.0.1",
+  "description": "The fastest web framework in the universe",
+  "main": "./dist/velox.cjs",
+  "module": "./dist/velox.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/velox.js",
+      "require": "./dist/velox.cjs"
+    },
+    "./jsx-runtime": {
+       "import": "./dist/jsx-runtime.js",
+       "require": "./dist/jsx-runtime.cjs",
+       "types": "./dist/jsx-runtime.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc",
+    "test": "vitest"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "jsdom": "^27.3.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^4.5.4"
+  }
+}
