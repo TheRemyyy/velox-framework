@@ -11,6 +11,10 @@ export default defineConfig({
       },
       name: 'Velox',
       formats: ['es', 'cjs'],
+      fileName: (format, entryName) => {
+        const ext = format === 'es' ? 'js' : 'cjs';
+        return `${entryName}.${ext}`;
+      }
     },
     rollupOptions: {
       external: [],
