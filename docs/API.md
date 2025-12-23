@@ -1,4 +1,12 @@
+<div align="center">
+
 # Velox API Reference
+
+**Core Primitives & Components**
+
+</div>
+
+---
 
 Velox is built on two core pillars: **Fine-Grained Reactivity** and **Direct DOM Manipulation**.
 
@@ -163,3 +171,9 @@ Renders the app to an HTML string on the server. Does not attach event listeners
 ### `hydrate`
 
 (Internal) Velox automatically handles hydration if it detects pre-rendered HTML with `data-hid` attributes.
+
+---
+
+<div align="center">
+<sub>Built with ❤️ and TypeScript</sub>
+</div>

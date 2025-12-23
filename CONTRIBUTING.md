@@ -1,6 +1,16 @@
+<div align="center">
+
 # Contributing to Velox
 
-Thank you for your interest in contributing to Velox! We welcome contributions from everyone.
+**Help us build the fastest framework in the universe**
+
+</div>
+
+---
+
+## Introduction
+
+Thank you for your interest in contributing to Velox! We welcome contributions from everyone, whether it's fixing a bug, improving documentation, or proposing new features.
 
 ## Getting Started
 
@@ -47,3 +57,9 @@ npm run test
 ## License
 
 By contributing, you agree that your contributions will be licensed under its MIT License.
+
+---
+
+<div align="center">
+<sub>Built with ❤️ and TypeScript</sub>
+</div>

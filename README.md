@@ -1,31 +1,33 @@
-<p align="center">
-  <img src="https://via.placeholder.com/200x50?text=VELOX+FRAMEWORK" alt="Velox Logo" width="200" />
-</p>
+<div align="center">
 
-# ⚡ Velox Framework
+# Velox Framework
 
-> **The fastest web framework in the universe.**  
-> Zero VDOM. Fine-Grained Reactivity. Instant Performance.
+**The Fastest Web Framework in the Universe**
 
-[![npm version](https://img.shields.io/npm/v/velox.svg)](https://www.npmjs.com/package/velox)
-[![License](https://img.shields.io/github/license/TheRemyyy/velox-framework)](https://github.com/TheRemyyy/velox-framework/blob/main/LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/TheRemyyy/velox-framework/publish.yml)](https://github.com/TheRemyyy/velox-framework/actions)
+[![NPM Version](https://img.shields.io/npm/v/velox.svg?style=flat-square)](https://www.npmjs.com/package/velox)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/TheRemyyy/velox-framework/publish.yml?style=flat-square)](https://github.com/TheRemyyy/velox-framework/actions)
 
-Velox is a next-generation web framework designed for ultimate performance and developer experience. Unlike traditional frameworks that rely on heavy Virtual DOM diffing, Velox compiles your declarative JSX directly into surgical DOM operations. The result? **O(1) updates** and a runtime that is barely there.
+*Zero VDOM. Fine-Grained Reactivity. Instant Performance.*
 
----
-
-## 🚀 Why Velox?
-
-* **⚡ Zero Virtual DOM**: We don't diff trees. We update nodes directly.
-* **🎯 Surgical Precision**: Reactivity is fine-grained. Only the text node or attribute that changed is updated.
-* **📦 tiny bundle**: The entire runtime is **< 3kb** (min+gzip).
-* **🛠️ Modern Tooling**: Built on **Vite**. Hot Module Replacement (HMR) just works.
-* **🧩 Simple API**: If you know React hooks, you know Velox signals (`createSignal`, `createEffect`).
+</div>
 
 ---
 
-## 📦 Installation
+## Overview
+
+Velox is a next-generation web framework designed for ultimate performance and developer experience. Unlike traditional frameworks that rely on heavy Virtual DOM diffing, Velox compiles your declarative JSX directly into surgical DOM operations. The result is an application with **O(1) updates** and a runtime that is barely there.
+
+### Key Features
+
+- **⚡ Zero Virtual DOM** — We don't diff trees. We update nodes directly using fine-grained reactivity.
+- **🎯 Surgical Precision** — Only the specific text node or attribute that changed is updated.
+- **📦 Tiny Footprint** — The entire runtime is **< 3kb** (min+gzip).
+- **🛠️ Modern Tooling** — Built on **Vite** for instant Hot Module Replacement (HMR).
+- **🧩 Simple API** — If you know React hooks, you know Velox signals (`createSignal`, `createEffect`).
+- **🔄 Universal Compatibility** — Works seamlessly with existing JS/TS ecosystems.
+
+## Installation
 
 Get started in seconds with our official scaffolding tool:
 
@@ -33,15 +35,13 @@ Get started in seconds with our official scaffolding tool:
 npm create velox@latest
 ```
 
-This will set up a complete workspace with TypeScript, Vite, and Velox pre-configured.
+This command sets up a complete workspace with TypeScript, Vite, and Velox pre-configured.
 
----
-
-## ⚡ Quick Start
+## Quick Start
 
 ### 1. The Basics
 
-Velox uses **Signals** for state. No class components, no complex `this` binding.
+Velox uses **Signals** for state management. No class components, no complex `this` binding.
 
 ```tsx
 // src/App.tsx
@@ -79,32 +79,37 @@ createEffect(() => {
 });
 ```
 
----
+## Project Structure
 
-## 📚 Documentation
+Velox is organized as a monorepo containing the core framework and its ecosystem:
+
+```
+velox-framework/
+├── packages/
+│   ├── velox/               # Core runtime and reactive engine
+│   ├── vite-plugin-velox/   # Vite integration & JSX config
+│   └── create-velox/        # CLI scaffolding tool
+├── docs/                    # Detailed API documentation
+└── examples/                # Example applications
+```
+
+## Documentation
 
 Detailed documentation is available in the `docs` directory:
 
-* [**API Reference**](./docs/API.md) - Deep dive into Signals, Router, SSR, and Components.
-* [**Contributing**](./CONTRIBUTING.md) - How to contribute to the core framework.
+- [**API Reference**](./docs/API.md) — Deep dive into Signals, Router, SSR, and Components.
+- [**Contributing**](./CONTRIBUTING.md) — How to contribute to the core framework.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+Inspired by modern reactive libraries and the quest for peak web performance.
 
 ---
 
-## 🏗️ Architecture
-
-Velox is a monorepo consisting of:
-
-* **`packages/velox`**: The core runtime and reactive engine.
-* **`packages/vite-plugin-velox`**: Build optimizations and JSX configuration.
-* **`packages/create-velox`**: The CLI for scaffolding new projects.
-
----
-
-## 🤝 Contributing
-
-We are building the future of web performance. Contributions are welcome!
-Please check out [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
-
-## 📄 License
-
-MIT © [TheRemyyy](https://github.com/TheRemyyy)
+<div align="center">
+<sub>Built with ❤️ and TypeScript</sub>
+</div>
