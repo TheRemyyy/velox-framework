@@ -2,18 +2,19 @@
   "name": "velox",
   "version": "0.0.1",
   "description": "The fastest web framework in the universe",
-  "main": "./dist/velox.cjs",
-  "module": "./dist/velox.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/velox.js",
+  "module": "./dist/velox.mjs",
+  "types": "./dist/velox.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/velox.js",
-      "require": "./dist/velox.cjs"
+      "import": "./dist/velox.mjs",
+      "require": "./dist/velox.js",
+      "types": "./dist/velox.d.ts"
     },
     "./jsx-runtime": {
-       "import": "./dist/jsx-runtime.js",
-       "require": "./dist/jsx-runtime.cjs",
-       "types": "./dist/jsx-runtime.d.ts"
+      "import": "./dist/jsx-runtime.mjs",
+      "require": "./dist/jsx-runtime.js",
+      "types": "./dist/jsx-runtime.d.ts"
     }
   },
   "files": [
