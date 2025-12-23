@@ -7,7 +7,8 @@ export default defineConfig({
     lib: {
       entry: {
         velox: resolve(__dirname, 'src/index.ts'),
-        'jsx-runtime': resolve(__dirname, 'src/jsx-runtime.ts')
+        'jsx-runtime': resolve(__dirname, 'src/jsx-runtime.ts'),
+        'jsx-dev-runtime': resolve(__dirname, 'src/jsx-dev-runtime.ts')
       },
       name: 'Velox',
       formats: ['es', 'cjs'],

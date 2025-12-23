@@ -15,10 +15,10 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "preserve",
-        "jsxFactory": "h",
-        "jsxFragmentFactory": "Fragment",
-        /* Linting */
+        /* Velox JSX - Brutally Strict */
+        "jsx": "react-jsx",
+        "jsxImportSource": "velox",
+        /* Linting - Safety First */
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
