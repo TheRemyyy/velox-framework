@@ -1,5 +1,5 @@
 {
-    "name": "create-velox",
+    "name": "@theremyyy/create-velox",
     "version": "0.0.1",
     "description": "Scaffolding tool for Velox Framework",
     "bin": {

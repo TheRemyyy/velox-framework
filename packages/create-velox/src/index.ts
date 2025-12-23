@@ -26,7 +26,7 @@ const renameFiles: Record<string, string | undefined> = {
 }
 
 async function init() {
-    const defaultTargetDir = 'velox-project'
+    const defaultTargetDir = '@theremyyy/velox-project'
     let targetDir = argv._[0] || defaultTargetDir
 
     let result: prompts.Answers<'projectName' | 'overwrite' | 'packageName' | 'framework'>

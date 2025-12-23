@@ -1,5 +1,5 @@
 {
-  "name": "velox",
+  "name": "@theremyyy/velox",
   "version": "0.0.1",
   "type": "module",
   "description": "The fastest web framework in the universe",

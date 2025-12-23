@@ -4,7 +4,7 @@
 
 **The Fastest Web Framework in the Universe**
 
-[![NPM Version](https://img.shields.io/npm/v/velox.svg?style=flat-square)](https://www.npmjs.com/package/velox)
+[![NPM Version](https://img.shields.io/npm/v/@theremyyy/velox.svg?style=flat-square)](https://www.npmjs.com/package/@theremyyy/velox)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/TheRemyyy/velox-framework/publish.yml?style=flat-square)](https://github.com/TheRemyyy/velox-framework/actions)
 
@@ -34,7 +34,7 @@ Velox is a next-generation web framework designed for ultimate performance and d
 Get started in seconds with our official scaffolding tool:
 
 ```bash
-npm create velox@latest
+npm create @theremyyy/velox@latest
 ```
 
 This command sets up a complete workspace with TypeScript, Vite, and Velox pre-configured.
@@ -47,7 +47,7 @@ Velox uses **Signals** for state management. No class components, no complex `th
 
 ```tsx
 // src/App.tsx
-import { createSignal } from 'velox';
+import { createSignal } from '@theremyyy/velox';
 
 export default function Counter() {
   const [count, setCount] = createSignal(0);
