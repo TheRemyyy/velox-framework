@@ -34,7 +34,7 @@ Velox is a next-generation web framework designed for ultimate performance and d
 Get started in seconds with our official scaffolding tool:
 
 ```bash
-npm create @theremyyy/velox@latest
+npm create @theremyyy/velox@latest // Not working yet
 ```
 
 This command sets up a complete workspace with TypeScript, Vite, and Velox pre-configured.
