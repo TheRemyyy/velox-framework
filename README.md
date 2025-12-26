@@ -4,7 +4,7 @@
 
 **The Fastest Web Framework in the Universe**
 
-[![NPM Version](https://img.shields.io/npm/v/@theremyyy/velox.svg?style=flat-square)](https://www.npmjs.com/package/@theremyyy/velox)
+[![NPM Version](https://img.shields.io/npm/v/@remyyy/velox.svg?style=flat-square)](https://www.npmjs.com/package/@remyyy/velox)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/TheRemyyy/velox-framework/publish.yml?style=flat-square)](https://github.com/TheRemyyy/velox-framework/actions)
 
@@ -28,6 +28,14 @@ Velox is a next-generation web framework designed for ultimate performance and d
 - **🛠️ Modern Tooling** — Built on **Vite** for instant Hot Module Replacement (HMR).
 - **🧩 Simple API** — If you know React hooks, you know Velox signals (`createSignal`, `createEffect`).
 - **🔄 Universal Compatibility** — Works seamlessly with existing JS/TS ecosystems.
+
+## Ecosystem
+
+| Package | Version | Description |
+| ------- | ------- | ----------- |
+| [`@remyyy/velox`](https://www.npmjs.com/package/@remyyy/velox) | [![NPM](https://img.shields.io/npm/v/@remyyy/velox.svg?style=flat-square)](https://www.npmjs.com/package/@remyyy/velox) | Core framework |
+| [`@remyyy/create-velox`](https://www.npmjs.com/package/@remyyy/create-velox) | [![NPM](https://img.shields.io/npm/v/@remyyy/create-velox.svg?style=flat-square)](https://www.npmjs.com/package/@remyyy/create-velox) | Scaffolding tool |
+| [`@remyyy/vite-plugin-velox`](https://www.npmjs.com/package/@remyyy/vite-plugin-velox) | [![NPM](https://img.shields.io/npm/v/@remyyy/vite-plugin-velox.svg?style=flat-square)](https://www.npmjs.com/package/@remyyy/vite-plugin-velox) | Vite integration |
 
 ## <a id="installation"></a>📦 Installation
 
