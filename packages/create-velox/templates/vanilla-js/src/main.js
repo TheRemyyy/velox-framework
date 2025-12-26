@@ -1,4 +1,4 @@
-import { mount } from 'velox'
+import { mount } from '@remyyy/velox'
 import './style.css'
 import App from './App'
 
