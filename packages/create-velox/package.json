@@ -1,15 +1,20 @@
 {
     "name": "@remyyy/create-velox",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publishConfig": {
         "access": "public"
     },
     "description": "Scaffolding tool for Velox Framework",
     "bin": {
-        "create-velox": "index.js",
-        "cv": "index.js"
+        "create-velox": "dist/index.mjs",
+        "cv": "dist/index.mjs"
     },
-    "main": "index.js",
+    "files": [
+        "dist",
+        "templates",
+        "README.md"
+    ],
+    "main": "dist/index.mjs",
     "scripts": {
         "build": "tsup src/index.ts --format esm --clean --minify",
         "dev": "tsup src/index.ts --format esm --watch",
