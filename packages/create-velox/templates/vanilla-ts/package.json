@@ -15,6 +15,6 @@
     "devDependencies": {
         "typescript": "^5.2.2",
         "vite": "^6.0.0",
-        "@remyyy/vite-plugin-velox": "^0.0.6"
+        "@remyyy/vite-plugin-velox": "^0.0.7"
     }
 }
