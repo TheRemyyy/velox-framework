@@ -1,6 +1,6 @@
 {
   "name": "@remyyy/vite-plugin-velox",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publishConfig": {
     "access": "public"
   },
@@ -22,11 +22,12 @@
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
   },
-  "dependencies": {
-    "vite": "^5.0.0"
+  "peerDependencies": {
+    "vite": "^6.0.0"
   },
   "devDependencies": {
     "tsup": "^8.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vite": "^6.0.0"
   }
 }

@@ -14,6 +14,6 @@
     },
     "devDependencies": {
         "vite": "^6.0.0",
-        "@remyyy/vite-plugin-velox": "^0.0.3"
+        "@remyyy/vite-plugin-velox": "^0.0.4"
     }
 }
