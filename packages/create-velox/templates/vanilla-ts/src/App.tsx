@@ -1,4 +1,4 @@
-import { createSignal, Router, Route, Link } from 'velox';
+import { createSignal, Router, Route, Link } from '@remyyy/velox';
 import './style.css';
 
 function Home() {
