@@ -10,11 +10,11 @@
         "check": "tsc"
     },
     "dependencies": {
-        "@theremyyy/velox": "^0.0.1"
+        "@remyyy/velox": "^0.0.1"
     },
     "devDependencies": {
         "typescript": "^5.2.2",
         "vite": "^5.2.0",
-        "@theremyyy/vite-plugin-velox": "^0.0.1"
+        "@remyyy/vite-plugin-velox": "^0.0.1"
     }
 }

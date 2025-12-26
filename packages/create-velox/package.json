@@ -1,5 +1,5 @@
 {
-    "name": "@theremyyy/create-velox",
+    "name": "@remyyy/create-velox",
     "version": "0.0.1",
     "publishConfig": {
         "access": "public"
