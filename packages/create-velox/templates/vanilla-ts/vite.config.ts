@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import velox from 'vite-plugin-velox'
+import velox from '@remyyy/vite-plugin-velox'
 
 export default defineConfig({
     plugins: [velox()]
