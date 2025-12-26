@@ -17,7 +17,7 @@
         "noEmit": true,
         /* Velox JSX - Brutally Strict */
         "jsx": "react-jsx",
-        "jsxImportSource": "velox",
+        "jsxImportSource": "@remyyy/velox",
         /* Linting - Safety First */
         "strict": true,
         "noUnusedLocals": true,

@@ -8,7 +8,7 @@ export default function velox(): Plugin {
         esbuild: {
           jsxFactory: 'h',
           jsxFragment: 'Fragment',
-          jsxInject: `import { h, Fragment } from 'velox'`
+          jsxInject: `import { h, Fragment } from '@remyyy/velox'`
         }
       };
     }

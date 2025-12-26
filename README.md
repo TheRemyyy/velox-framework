@@ -55,7 +55,7 @@ Velox uses **Signals** for state management. No class components, no complex `th
 
 ```tsx
 // src/App.tsx
-import { createSignal } from '@theremyyy/velox';
+import { createSignal } from '@remyyy/velox';
 
 export default function Counter() {
   const [count, setCount] = createSignal(0);
@@ -78,7 +78,7 @@ export default function Counter() {
 Side effects are handled by `createEffect`. It automatically tracks dependencies—no manual dependency arrays needed.
 
 ```tsx
-import { createSignal, createEffect } from 'velox';
+import { createSignal, createEffect } from '@remyyy/velox';
 
 const [userId, setUserId] = createSignal(1);
 
