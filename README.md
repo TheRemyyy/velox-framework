@@ -6,7 +6,7 @@
 
 [![NPM Version](https://img.shields.io/npm/v/@remyyy/velox.svg?style=flat-square)](https://www.npmjs.com/package/@remyyy/velox)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/TheRemyyy/velox-framework/publish.yml?style=flat-square)](https://github.com/TheRemyyy/velox-framework/actions)
+[![NPM Downloads](https://img.shields.io/npm/dt/@remyyy/velox?style=flat-square&color=d9dea6)](https://www.npmjs.com/package/@remyyy/velox)
 
 *Zero VDOM. Fine-Grained Reactivity. Instant Performance.*
 
