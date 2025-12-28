@@ -1,5 +1,9 @@
 # Changelog - create-velox
 
+## [0.0.15] - 2025-12-28
+
+- Fixed `App.js` JSX extension issue in vanilla-js template (renamed to `App.jsx`).
+
 ## [0.0.14] - 2025-12-28
 
 - Fixed syntax error (`!`) in vanilla-js template `main.js`.
