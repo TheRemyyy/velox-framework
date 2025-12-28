@@ -10,11 +10,11 @@
         "check": "tsc"
     },
     "dependencies": {
-        "@remyyy/velox": "^0.0.5"
+        "@remyyy/velox": "^0.0.6"
     },
     "devDependencies": {
         "vite": "^6.0.0",
-        "@remyyy/vite-plugin-velox": "^0.0.8",
+        "@remyyy/vite-plugin-velox": "^0.0.9",
         "vite-plugin-compression": "^0.5.1",
         "terser": "^5.24.0"
     }
