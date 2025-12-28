@@ -10,7 +10,7 @@ function Dashboard() {
     createEffect(() => {
         const c = count();
         const timestamp = new Date().toLocaleTimeString('en-GB');
-        setLogs(prev => [`[${timestamp}] 0x${c.toString(16).toUpperCase().padStart(4, '0')} STATE_RECONCILED`, ...prev].slice(0, 6));
+        setLogs(prev => [`[${timestamp}] Updated state to ${c}`, ...prev].slice(0, 6));
     });
 
     return (
@@ -53,8 +53,8 @@ function Dashboard() {
                         {count}
                     </div>
                     <div style={{ display: 'flex', gap: '0.75rem' }}>
-                        <button onClick={() => setCount(c => c + 1)}>Execute Upgrade</button>
-                        <button className="secondary" onClick={() => setCount(c => c - 1)}>Revert State</button>
+                        <button onClick={() => setCount(c => c + 1)}>Increment</button>
+                        <button className="secondary" onClick={() => setCount(c => c - 1)}>Decrement</button>
                     </div>
                 </Card>
 
@@ -76,19 +76,19 @@ function Dashboard() {
                     </div>
                 </Card>
 
-                <Card title="Core Telemetry">
+                <Card title="Quick Stats">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', fontSize: '0.9rem', fontWeight: 600 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.6rem' }}>
-                            <span style={{ color: 'var(--color-text-secondary)' }}>RUNTIME_BIN</span>
-                            <span style={{ color: 'var(--color-primary)' }}>3.2KB</span>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>PACKAGE_SIZE</span>
+                            <span style={{ color: 'var(--color-primary)' }}>&lt; 3KB</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.6rem' }}>
-                            <span style={{ color: 'var(--color-text-secondary)' }}>LATENCY_MODE</span>
-                            <span>ATOMIC</span>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>UPDATE_SPEED</span>
+                            <span>O(1)</span>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.6rem' }}>
-                            <span style={{ color: 'var(--color-text-secondary)' }}>VDOM_ENGINE</span>
-                            <span style={{ color: '#ff7b72' }}>BYPASSED</span>
+                            <span style={{ color: 'var(--color-text-secondary)' }}>VIRTUAL_DOM</span>
+                            <span style={{ color: '#ff7b72' }}>ZERO</span>
                         </div>
                     </div>
                 </Card>

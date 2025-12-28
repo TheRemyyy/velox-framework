@@ -1,6 +1,10 @@
-import { Link } from '@remyyy/velox';
+import { Link, useLocation } from '@remyyy/velox';
 
 export function Header() {
+    const location = useLocation();
+
+    const isActive = (path: string) => location.pathname === path;
+
     return (
         <header style={{
             display: 'flex',
@@ -8,7 +12,7 @@ export function Header() {
             justifyContent: 'space-between',
             marginBottom: '6rem',
             paddingBottom: '2.5rem',
-            borderBottom: '1px solid var(--color-border)',
+            borderBottom: '2px solid var(--color-primary)',
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{
@@ -28,8 +32,16 @@ export function Header() {
             </div>
 
             <nav style={{ display: 'flex', gap: '3rem' }}>
-                <Link to="/" style={{ color: 'var(--color-text-primary)' }}>Terminal</Link>
-                <Link to="/features" style={{ color: 'var(--color-text-secondary)' }}>Library</Link>
+                <Link to="/" style={{
+                    color: isActive('/') ? 'var(--color-primary)' : 'var(--color-text-primary)',
+                    fontWeight: isActive('/') ? '700' : '600',
+                    transition: 'all 0.2s ease'
+                }}>Terminal</Link>
+                <Link to="/features" style={{
+                    color: isActive('/features') ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                    fontWeight: isActive('/features') ? '700' : '600',
+                    transition: 'all 0.2s ease'
+                }}>Library</Link>
             </nav>
         </header>
     );

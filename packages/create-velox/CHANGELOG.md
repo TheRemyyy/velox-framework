@@ -1,6 +1,11 @@
 # Changelog - create-velox
 
-## [0.0.16] - 2025-12-28
+## [0.0.18] - 2025-12-29
+
+- Updated templates to use `@remyyy/velox@0.0.7`.
+- Maintenance release.
+
+## [0.0.17] - 2025-12-28
 
 - Synchronized vanilla-js and vanilla-ts templates to be 1:1.
 - Updated vanilla-ts templates with professional dark theme.

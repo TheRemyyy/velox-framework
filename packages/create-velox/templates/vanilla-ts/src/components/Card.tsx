@@ -17,11 +17,11 @@ export const Card: Component = (props) => {
             onMouseLeave={(e: any) => e.currentTarget.style.borderColor = 'var(--color-border)'}
         >
             {props.title && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <div style={{ width: '2px', height: '12px', background: 'var(--color-primary)' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ width: '4px', height: '16px', background: 'var(--color-primary)' }} />
                     <h3 style={{
-                        fontSize: '0.9rem',
-                        fontWeight: 700,
+                        fontSize: '1rem',
+                        fontWeight: 800,
                         color: 'white',
                     }}>
                         {props.title}

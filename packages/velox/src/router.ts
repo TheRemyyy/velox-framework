@@ -59,10 +59,10 @@ export const Route: Component = (props: any) => {
 
         let content: any = null;
         if (match && typeof component === 'function') {
-             const matchedUrl = match.url || fullPath;
-             const wrappedChildren = wrapChildren(children, matchedUrl);
+            const matchedUrl = match.url || fullPath;
+            const wrappedChildren = wrapChildren(children, matchedUrl);
 
-             content = hSSR(component, { params: match.params, children: wrappedChildren });
+            content = hSSR(component, { params: match.params, children: wrappedChildren });
         }
 
         return hSSR('div', {
@@ -137,6 +137,15 @@ export function navigate(to: string) {
     }
 }
 
+export function useLocation() {
+    const [getPath] = getPathSignal();
+    return {
+        get pathname() {
+            return getPath();
+        }
+    };
+}
+
 function resolvePath(base: string, path: string) {
     if (path.startsWith('/')) return path;
     const cleanBase = base === '/' ? '' : base;
@@ -146,17 +155,17 @@ function resolvePath(base: string, path: string) {
 
 function wrapChildren(children: any[], newBase: string) {
     return children.map((child: any) => {
-         if (child && child.exec) {
-             return {
-                 exec: () => {
-                     pushContext({ routerBase: newBase });
-                     const n = child.exec();
-                     popContext();
-                     return n;
-                 }
-             };
-         }
-         return child;
+        if (child && child.exec) {
+            return {
+                exec: () => {
+                    pushContext({ routerBase: newBase });
+                    const n = child.exec();
+                    popContext();
+                    return n;
+                }
+            };
+        }
+        return child;
     });
 }
 
