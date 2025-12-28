@@ -22,7 +22,7 @@ function Dashboard() {
                 </h1>
                 <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.1rem', maxWidth: '600px' }}>
                     You are running a production-ready template optimized for speed.
-                    Start editing <code>src/App.js</code> to build your next big idea.
+                    Start editing <code>src/App.jsx</code> to build your next big idea.
                 </p>
             </section>
 

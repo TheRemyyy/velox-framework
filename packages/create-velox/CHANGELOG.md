@@ -1,5 +1,10 @@
 # Changelog - create-velox
 
+## [0.0.16] - 2025-12-28
+
+- Synchronized vanilla-js and vanilla-ts templates to be 1:1.
+- Updated vanilla-ts templates with professional dark theme.
+
 ## [0.0.15] - 2025-12-28
 
 - Fixed `App.js` JSX extension issue in vanilla-js template (renamed to `App.jsx`).
