@@ -1,16 +1,16 @@
 :root {
   --font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  
-  --color-bg: #09090b;
-  --color-surface: #18181b;
-  --color-surface-hover: #27272a;
-  --color-border: #27272a;
-  
-  --color-text-primary: #f4f4f5;
-  --color-text-secondary: #a1a1aa;
-  
-  --color-primary: #f97316;
-  --color-primary-glow: rgba(249, 115, 22, 0.5);
+
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-hover: #334155;
+  --color-border: #334155;
+
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+
+  --color-primary: #8b5cf6;
+  --color-primary-glow: rgba(139, 92, 246, 0.5);
 }
 
 * {
@@ -62,14 +62,14 @@ button:hover {
 }
 
 .layout {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
