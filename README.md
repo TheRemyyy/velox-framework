@@ -108,6 +108,7 @@ velox-framework/
 Detailed documentation is available in the `docs` directory:
 
 - [**API Reference**](./docs/API.md) — Deep dive into Signals, Router, SSR, and Components.
+- [**Changelogs**](./CHANGELOGS.md) — Version history for all packages.
 - [**Contributing**](./CONTRIBUTING.md) — How to contribute to the core framework.
 
 ## License
