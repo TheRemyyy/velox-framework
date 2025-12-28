@@ -2,5 +2,5 @@ import { mount } from '@remyyy/velox'
 import './style.css'
 import App from './App'
 
-const root = document.getElementById('app')!
+const root = document.getElementById('app') as HTMLElement
 mount(App, root)

@@ -1,5 +1,11 @@
 # Changelog - create-velox
 
+## [0.0.14] - 2025-12-28
+
+- Fixed syntax error (`!`) in vanilla-js template `main.js`.
+- Fixed `main.ts` entry consistency.
+- Updated templates to use latest package versions.
+
 ## [0.0.13] - 2025-12-28
 
 - Major template overhaul:
