@@ -1,6 +1,19 @@
 {
   "name": "@remyyy/vite-plugin-velox",
-  "version": "0.0.8",
+  "version": "0.0.9",
+  "author": "TheRemyyy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheRemyyy/velox-framework.git",
+    "directory": "packages/vite-plugin-velox"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "velox",
+    "framework"
+  ],
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },

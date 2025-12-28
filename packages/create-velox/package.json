@@ -1,6 +1,19 @@
 {
     "name": "@remyyy/create-velox",
-    "version": "0.0.12",
+    "version": "0.0.13",
+    "author": "TheRemyyy",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TheRemyyy/velox-framework.git",
+        "directory": "packages/create-velox"
+    },
+    "keywords": [
+        "cli",
+        "scaffold",
+        "generator",
+        "velox"
+    ],
+    "license": "MIT",
     "publishConfig": {
         "access": "public"
     },

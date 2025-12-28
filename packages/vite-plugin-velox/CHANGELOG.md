@@ -1,5 +1,9 @@
 # Changelog - vite-plugin-velox
 
+## [0.0.9] - 2025-12-28
+
+- Metadata updates and template improvements.
+
 ## [0.0.8] - 2025-12-28
 
 - Maintenance release.

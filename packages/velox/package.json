@@ -1,6 +1,20 @@
 {
   "name": "@remyyy/velox",
-  "version": "0.0.5",
+  "version": "0.0.6",
+  "author": "TheRemyyy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheRemyyy/velox-framework.git",
+    "directory": "packages/velox"
+  },
+  "keywords": [
+    "framework",
+    "reactivity",
+    "signals",
+    "performance",
+    "zero-copy"
+  ],
+  "homepage": "https://velox-framework.vercel.app",
   "type": "module",
   "publishConfig": {
     "access": "public"

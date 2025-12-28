@@ -1,46 +1,106 @@
-import { createSignal, Router, Route, Link } from '@remyyy/velox';
+import { createSignal, createEffect, Router, Route, For } from '@remyyy/velox';
+import { Header } from './components/Header';
+import { Card } from './components/Card';
 import './style.css';
 
-function Home() {
+function Dashboard() {
     const [count, setCount] = createSignal(0);
+    const [logs, setLogs] = createSignal<string[]>([]);
+
+    createEffect(() => {
+        const c = count();
+        setLogs(prev => [`Counter updated to: ${c}`, ...prev].slice(0, 5));
+    });
 
     return (
-        <div className="card">
-            <h1>Velox Framework</h1>
-            <div className="card-body">
-                <button onClick={() => setCount(c => c + 1)}>
-                    Count is {count}
-                </button>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
+        <div className="layout">
+            <Header />
+
+            <section>
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '1rem' }}>
+                    Welcome to <span style={{ color: 'var(--color-primary)' }}>Velox</span>
+                </h1>
+                <p style={{ color: 'var(--color-text-secondary)', fontSize: '1.1rem', maxWidth: '600px' }}>
+                    You are running a production-ready template optimized for speed.
+                    Start editing <code>src/App.tsx</code> to build your next big idea.
                 </p>
+            </section>
+
+            <div className="grid">
+                <Card title="Interactive Signal">
+                    <div style={{
+                        fontSize: '3rem',
+                        fontWeight: 700,
+                        color: 'var(--color-primary)',
+                        fontVariantNumeric: 'tabular-nums'
+                    }}>
+                        {count}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button onClick={() => setCount(c => c + 1)}>Increment</button>
+                        <button onClick={() => setCount(c => c - 1)}>Decrement</button>
+                    </div>
+                </Card>
+
+                <Card title="Reactive Logs">
+                    <div style={{
+                        background: '#111',
+                        padding: '1rem',
+                        borderRadius: '8px',
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem',
+                        height: '150px',
+                        overflow: 'hidden'
+                    }}>
+                        <For each={logs}>
+                            {(log) => <div style={{ color: '#0f0', marginBottom: '0.25rem' }}>➜ {log}</div>}
+                        </For>
+                    </div>
+                </Card>
+
+                <Card title="Performance Stats">
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <div>Bundle Size: <span style={{ color: 'var(--color-primary)' }}>&lt; 5kb</span></div>
+                        <div>Reactivity: <span style={{ color: 'var(--color-primary)' }}>Fine-Grained</span></div>
+                        <div>Virtual DOM: <span style={{ color: 'var(--color-primary)' }}>None</span></div>
+                        <div>Hydration: <span style={{ color: 'var(--color-primary)' }}>Instant</span></div>
+                    </div>
+                </Card>
             </div>
-            <p className="read-the-docs">
-                Click on the Velox logo to learn more
-            </p>
         </div>
     );
 }
 
-function About() {
+function Features() {
+    const features = [
+        { name: "Zero Virtual DOM", desc: "Compiles directly to surgical DOM operations." },
+        { name: "Fine-Grained Reactivity", desc: "Only updates what needs to change." },
+        { name: "Tiny Footprint", desc: "Entire runtime is under 3kb min+gzip." },
+        { name: "TypeScript First", desc: "Written in TS for TS developers." }
+    ];
+
     return (
-        <div className="card">
-            <h1>About Page</h1>
-            <p>This is a demonstration of Velox Routing.</p>
+        <div className="layout">
+            <Header />
+            <h2 style={{ fontSize: '2rem', marginBottom: '2rem' }}>Core Features</h2>
+            <div className="grid">
+                <For each={() => features}>
+                    {(item) => (
+                        <Card title={item.name}>
+                            <p style={{ color: 'var(--color-text-secondary)' }}>{item.desc}</p>
+                        </Card>
+                    )}
+                </For>
+            </div>
         </div>
     );
 }
 
 export default function App() {
     return (
-        <div className="app-container">
-            <Router>
-                <nav style="margin-bottom: 2rem;">
-                    <Link to="/">Home</Link> | <Link to="/about">About</Link>
-                </nav>
-                <Route path="/" component={Home} />
-                <Route path="/about" component={About} />
-            </Router>
-        </div>
+        <Router>
+            <Route path="/" component={Dashboard} />
+            <Route path="/features" component={Features} />
+        </Router>
     );
 }
