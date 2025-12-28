@@ -6,22 +6,30 @@ export function Header() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: '3rem',
+            marginBottom: '6rem',
+            paddingBottom: '2.5rem',
             borderBottom: '1px solid var(--color-border)',
-            paddingBottom: '1.5rem'
         }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{
                     width: '32px', height: '32px',
-                    background: 'var(--color-primary)',
-                    borderRadius: '6px'
-                }} />
-                <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>Velox App</span>
+                    backgroundColor: 'var(--color-primary)',
+                    borderRadius: '6px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 900,
+                    color: 'var(--color-bg)',
+                    fontSize: '1.2rem'
+                }}>V</div>
+                <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.04em' }}>
+                    VELOX<span style={{ color: 'var(--color-primary)' }}>_</span>CORE
+                </span>
             </div>
 
-            <nav style={{ display: 'flex', gap: '2rem' }}>
-                <Link to="/">Dashboard</Link>
-                <Link to="/features">Features</Link>
+            <nav style={{ display: 'flex', gap: '3rem' }}>
+                <Link to="/" style={{ color: 'var(--color-text-primary)' }}>Terminal</Link>
+                <Link to="/features" style={{ color: 'var(--color-text-secondary)' }}>Library</Link>
             </nav>
         </header>
     );
