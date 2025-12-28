@@ -77,7 +77,7 @@ export function h(tag: string | Component, props: Props | null, ...children: any
 
             // Apply Props
             for (const [key, value] of Object.entries(safeProps)) {
-                if (key === 'children') continue;
+                if (key === 'children' || key === 'key') continue;
 
                 if (key.startsWith('on') && typeof value === 'function') {
                     const eventName = key.toLowerCase().substring(2);

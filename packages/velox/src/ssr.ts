@@ -9,12 +9,12 @@ export interface SSRVNode {
 export const resetHydrationId = resetContext;
 
 const VOID_ELEMENTS = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-  'link', 'meta', 'param', 'source', 'track', 'wbr'
+    'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+    'link', 'meta', 'param', 'source', 'track', 'wbr'
 ]);
 
 export class SafeString {
-    constructor(public value: string) {}
+    constructor(public value: string) { }
     toString() { return this.value; }
 }
 
@@ -50,19 +50,19 @@ export function hSSR(tag: string | SSRComponent, props: any, ...children: any[])
             let html = `<${tagName} data-hid="${currentId}"`;
 
             for (const [key, value] of Object.entries(props)) {
-                if (key === 'children' || key.startsWith('on')) continue;
+                if (key === 'children' || key === 'key' || key.startsWith('on')) continue;
                 if (key === 'className') {
                     html += ` class="${escapeHtml(String(value))}"`;
                 } else if (key === 'style' && typeof value === 'object') {
-                     const styleStr = Object.entries(value as Record<string, any>)
+                    const styleStr = Object.entries(value as Record<string, any>)
                         .map(([k, v]) => `${k}:${v}`)
                         .join(';');
-                     html += ` style="${escapeHtml(styleStr)}"`;
+                    html += ` style="${escapeHtml(styleStr)}"`;
                 } else {
                     if (value === true) {
-                         html += ` ${key}`;
+                        html += ` ${key}`;
                     } else if (value !== false && value != null) {
-                         html += ` ${key}="${escapeHtml(String(value))}"`;
+                        html += ` ${key}="${escapeHtml(String(value))}"`;
                     }
                 }
             }
