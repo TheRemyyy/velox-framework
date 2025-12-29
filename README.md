@@ -7,7 +7,6 @@
 [![Website](https://img.shields.io/badge/Website-veloxframework.vercel.app-3b82f6?style=flat-square&logo=vercel)](https://veloxframework.vercel.app)
 [![NPM Version](https://img.shields.io/npm/v/@remyyy/velox.svg?style=flat-square)](https://www.npmjs.com/package/@remyyy/velox)
 [![NPM Downloads](https://img.shields.io/npm/dt/@remyyy/velox?style=flat-square&color=d9dea6)](https://www.npmjs.com/package/@remyyy/velox)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
 *Zero VDOM. Fine-Grained Reactivity. Instant Performance.*
 
