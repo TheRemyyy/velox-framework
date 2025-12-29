@@ -10,7 +10,7 @@
         "check": "tsc"
     },
     "dependencies": {
-        "@remyyy/velox": "^0.0.7"
+        "@remyyy/velox": "^0.0.8"
     },
     "devDependencies": {
         "vite": "^6.0.0",

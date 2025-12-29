@@ -1,5 +1,9 @@
 # Changelog - @remyyy/velox
 
+## [0.0.8] - 2025-12-29
+
+- Homepage change.
+
 ## [0.0.7] - 2025-12-29
 
 - Added `useLocation` hook for reactive route tracking.
