@@ -1,0 +1,26 @@
+# Changelog - @remyyy/velox
+
+## [0.0.8] - 2025-12-29
+
+- Homepage change.
+
+## [0.0.7] - 2025-12-29
+
+- Added `useLocation` hook for reactive route tracking.
+- Maintenance and internal improvements.
+
+## [0.0.6] - 2025-12-28
+
+- Metadata updates and maintenance.
+
+## [0.0.5] - 2025-12-28
+
+- Fixed `key` attribute leaking into DOM elements.
+
+## [0.0.4] - 2025-12-28
+
+- Maintenance release.
+
+## [0.0.3] - 2025-12-28
+
+- Initial release structure.

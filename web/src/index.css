@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Softer Zinc Palette (nyro-db style) */
+  --color-background: #09090b;
+  --color-surface: #18181b;
+  --color-surface-hover: #27272a;
+  --color-border: #27272a;
+  --color-border-bright: #3f3f46;
+
+  --color-primary: #3b82f6;
+  --color-text-primary: #f4f4f5;
+  --color-text-secondary: #a1a1aa;
+  --color-text-dim: #71717a;
+
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Global Reset */
+* {
+  border-color: var(--color-border);
+}
+
+/* Remove default focus rings */
+button:focus,
+button:focus-visible,
+a:focus,
+a:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-hover);
+  border-radius: 10px;
+}
+
+/* Force Prose Overrides */
+.prose {
+  max-width: none;
+}
+
+.prose pre {
+  background-color: #0c0c0e !important;
+  border: 1px solid var(--color-border);
+}
+
+.prose code {
+  color: var(--color-text-primary);
+  background-color: var(--color-surface);
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  font-weight: 400;
+}
+
+.prose code::before,
+.prose code::after {
+  content: "" !important;
+}

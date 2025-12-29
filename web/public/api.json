@@ -1,0 +1,13 @@
+{
+  "name": "velox-framework",
+  "version": "0.0.8",
+  "description": "High-performance reactive web framework",
+  "author": "TheRemyyy",
+  "license": "MIT",
+  "repository": "https://github.com/TheRemyyy/velox-framework",
+  "packages": [
+    "@remyyy/velox",
+    "@remyyy/create-velox",
+    "@remyyy/vite-plugin-velox"
+  ]
+}
