@@ -1,5 +1,10 @@
 # Changelog - create-velox
 
+## [0.0.19] - 2025-12-29
+
+- Updated templates to use `@remyyy/velox@0.0.8`.
+- Maintenance release.
+
 ## [0.0.18] - 2025-12-29
 
 - Updated templates to use `@remyyy/velox@0.0.7`.
