@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { ArrowRight, Zap, Box, Layers, Cpu, Terminal, Sparkles, ZapOff, Scale, Code } from 'lucide-react';
+import { ArrowRight, Cpu, Sparkles, ZapOff, Scale, Code } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -166,3 +166,4 @@ function DetailCard({ title, desc }: { title: string, desc: string }) {
         </div>
     );
 }
+
