@@ -41,8 +41,8 @@ export default function Docs() {
     const [loading, setLoading] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const currentPath = location.pathname;
-    const currentIndex = FLATTENED_DOCS.findIndex(item => item.path === currentPath);
+    const normalizedPath = (location.pathname === "/docs" || location.pathname === "/docs/") ? "/docs/velox/overview" : location.pathname;
+    const currentIndex = FLATTENED_DOCS.findIndex(item => item.path === normalizedPath);
     const prev = currentIndex > 0 ? FLATTENED_DOCS[currentIndex - 1] : null;
     const next = currentIndex < FLATTENED_DOCS.length - 1 ? FLATTENED_DOCS[currentIndex + 1] : null;
 
@@ -50,7 +50,7 @@ export default function Docs() {
         const fetchDoc = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`${currentPath}.md`);
+                const res = await fetch(`${normalizedPath}.md`);
                 if (res.ok) {
                     const text = await res.text();
                     marked.use({ gfm: true, breaks: true });
@@ -67,7 +67,7 @@ export default function Docs() {
         };
         fetchDoc();
         setIsSidebarOpen(false);
-    }, [currentPath]);
+    }, [normalizedPath]);
 
     return (
         <div className="flex min-h-screen bg-[#050505] text-white font-sans antialiased">
@@ -95,7 +95,7 @@ export default function Docs() {
                                         <button
                                             key={j}
                                             onClick={() => navigate(item.path)}
-                                            className={`w-full text-left px-4 py-2 rounded-xl text-sm font-medium transition-all ${currentPath === item.path ? 'bg-white/5 text-primary border-l-2 border-primary pl-5' : 'text-neutral-500 hover:text-neutral-200'}`}
+                                            className={`w-full text-left px-4 py-2 rounded-xl text-sm font-medium transition-all ${normalizedPath === item.path ? 'bg-white/5 text-primary border-l-2 border-primary pl-5' : 'text-neutral-500 hover:text-neutral-200'}`}
                                         >
                                             {item.title}
                                         </button>
@@ -152,4 +152,6 @@ export default function Docs() {
         </div>
     );
 }
+
+
 
