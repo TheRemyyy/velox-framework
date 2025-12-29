@@ -14,7 +14,7 @@
     "performance",
     "zero-copy"
   ],
-  "homepage": "https://velox-framework.vercel.app",
+  "homepage": "https://github.com/TheRemyyy/velox-framework",
   "type": "module",
   "publishConfig": {
     "access": "public"
