@@ -40,20 +40,20 @@ export default function Changelog() {
     }, [html]);
 
     return (
-        <div className="flex-1 pt-32 pb-20 px-6 max-w-4xl mx-auto w-full">
-            <div className="mb-16 text-center">
-                <h1 className="text-5xl md:text-6xl font-bold text-text-primary mb-6 tracking-tighter">Changelog</h1>
-                <p className="text-lg text-text-secondary font-medium max-w-2xl mx-auto">Keep track of the latest updates and improvements across the Velox ecosystem.</p>
+        <div className="flex-1 pt-32 pb-20 px-6 max-w-4xl mx-auto w-full font-sans">
+            <div className="mb-20 text-center space-y-4">
+                <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter italic uppercase">Changelog</h1>
+                <p className="text-xl text-neutral-500 font-medium max-w-xl mx-auto">Tracking the evolution of the reactive web.</p>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-2 mb-16">
+            <div className="flex flex-wrap justify-center gap-3 mb-20">
                 {PACKAGES.map(pkg => (
                     <button
                         key={pkg.id}
                         onClick={() => setSelected(pkg.id)}
-                        className={`px-5 py-2 rounded-xl text-xs font-bold transition-all border ${selected === pkg.id
-                                ? 'bg-primary text-background border-primary shadow-lg shadow-primary/20'
-                                : 'bg-surface text-text-secondary border-border hover:text-text-primary hover:border-border-bright'
+                        className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all border uppercase tracking-widest ${selected === pkg.id
+                                ? 'bg-white text-black border-white shadow-xl shadow-white/5'
+                                : 'bg-white/5 text-neutral-500 border-white/10 hover:text-white hover:border-white/20'       
                             }`}
                     >
                         {pkg.name}
@@ -63,12 +63,17 @@ export default function Changelog() {
 
             <motion.div
                 key={selected}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="bg-surface/30 border border-border/40 rounded-2xl p-8 md:p-12 max-w-3xl mx-auto shadow-xl"
+                transition={{ duration: 0.2 }}
+                className="bg-white/[0.02] border border-white/5 rounded-3xl p-10 md:p-16 max-w-3xl mx-auto shadow-2xl"
             >
-                <div className="prose prose-invert prose-zinc max-w-none">
+                <div className="prose prose-invert prose-zinc max-w-none 
+                    prose-h1:text-3xl prose-h1:font-bold prose-h1:tracking-tighter prose-h1:uppercase prose-h1:italic
+                    prose-h2:text-xl prose-h2:font-bold prose-h2:text-primary prose-h2:mt-12 prose-h2:mb-4
+                    prose-p:text-neutral-400 prose-p:leading-relaxed
+                    prose-li:text-neutral-400
+                    prose-code:text-primary prose-code:bg-white/5 prose-code:px-1.5 prose-code:rounded">
                     <div dangerouslySetInnerHTML={{ __html: html }} />
                 </div>
             </motion.div>
